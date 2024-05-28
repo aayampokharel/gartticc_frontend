@@ -38,7 +38,7 @@ class _NameState extends State<Name> {
   //? getkustofwords() returns a single word from backend in thee break section in painter
   Future getListOfWords() async {
     var response = await http.get(Uri.parse(
-        "http://localhost:8080/listofwords")); //! not list of word but the neext word in queue from backend
+        "https://gartiicc-backend.onrender.com/listofwords")); //! not list of word but the neext word in queue from backend
     return response.body;
   }
 
@@ -90,7 +90,8 @@ bool toogleReadOnly = false;
 
 class _MyAppState extends State<MyApp> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  final channel = WebSocketChannel.connect(Uri.parse('ws://localhost:8080/'));
+  final channel = WebSocketChannel.connect(
+      Uri.parse('ws://gartiicc-backend.onrender.com/'));
 
   TextEditingController chatController = TextEditingController();
   List listOfMessage = [];
@@ -115,7 +116,7 @@ class _MyAppState extends State<MyApp> {
     // currentName=await http.get(Uri.parse("http://localhost:8080/listofwords"));
     var x = await http.post(
         Uri.parse(
-            "http://localhost:8080/currentcheck"), //!adds the current player in the list and returns the first player
+            "https://gartiicc-backend.onrender.com/currentcheck"), //!adds the current player in the list and returns the first player
         body: json.encode(widget.currentName));
     return x.body;
   }
@@ -225,8 +226,8 @@ class _MyAppState extends State<MyApp> {
             'clone '), //! I HAVENOT ADDED THE REBUILD OF THE TOOGLEREADONLY ABA TYO KASARI GARNE HO BASED ON SOME VALUE GARNE HO KI HOINA BHANERA DISCUSS GARNA PARCHA .
         leading: IconButton(
           onPressed: () async {
-            var res =
-                await http.get(Uri.parse('http://localhost:8080/listofnames'));
+            var res = await http.get(
+                Uri.parse('https://gartiicc-backend.onrender.com/listofnames'));
 
             Future.delayed(Duration(seconds: 2), () {
               drawerStream.add(res.body);

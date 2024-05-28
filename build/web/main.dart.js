@@ -83031,7 +83031,7 @@ $1(a){var s=this.a
 return new A.lq(s.d.a.a,s.gIg(),null)},
 $S:166}
 A.lq.prototype={
-aj(){var s=null,r=A.akO(A.Fx(A.dW("ws://https://gartiicc-backend.onrender.com/"),s))
+aj(){var s=null,r=A.akO(A.Fx(A.dW("ws://gartiicc-backend.onrender.com/"),s))
 return new A.C0(new A.bd(s,t.sW),r,new A.zT(B.k7,$.ak()),[],A.rF(s,s,!1,t.y),A.rF(s,s,!1,t.z),A.B(t.N,t.S),[],B.j)}}
 A.C0.prototype={
 uB(a){this.w.D(0,a)},

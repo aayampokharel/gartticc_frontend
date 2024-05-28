@@ -59,11 +59,11 @@ class _PainterState extends State<Painter> {
   }
 
   final DrawingController drawingController = DrawingController();
-  final paintChannel =
-      WebSocketChannel.connect(Uri.parse('ws://localhost:8080/paint'));
+  final paintChannel = WebSocketChannel.connect(
+      Uri.parse('ws://gartiicc-backend.onrender.com/paint'));
 
-  final checkChannel =
-      WebSocketChannel.connect(Uri.parse('ws://localhost:8080/check'));
+  final checkChannel = WebSocketChannel.connect(
+      Uri.parse('ws://gartiicc-backend.onrender.com/check'));
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
