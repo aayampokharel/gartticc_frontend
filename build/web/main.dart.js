@@ -83031,7 +83031,7 @@ $1(a){var s=this.a
 return new A.lq(s.d.a.a,s.gIg(),null)},
 $S:166}
 A.lq.prototype={
-aj(){var s=null,r=A.akO(A.Fx(A.dW("ws://gartiicc-backend.onrender.com/"),s))
+aj(){var s=null,r=A.akO(A.Fx(A.dW("wss://gartiicc-backend.onrender.com/"),s))
 return new A.C0(new A.bd(s,t.sW),r,new A.zT(B.k7,$.ak()),[],A.rF(s,s,!1,t.y),A.rF(s,s,!1,t.z),A.B(t.N,t.S),[],B.j)}}
 A.C0.prototype={
 uB(a){this.w.D(0,a)},
@@ -83207,7 +83207,7 @@ s.nG(r.a.a)
 r.sc8("")},
 $S:0}
 A.qR.prototype={
-aj(){return new A.PR(A.apJ(),A.apJ(),A.akO(A.Fx(A.dW("ws://gartiicc-backend.onrender.com/paint"),null)),A.akO(A.Fx(A.dW("ws://gartiicc-backend.onrender.com/check"),null)),B.j)},
+aj(){return new A.PR(A.apJ(),A.apJ(),A.akO(A.Fx(A.dW("wss://gartiicc-backend.onrender.com/paint"),null)),A.akO(A.Fx(A.dW("wss://gartiicc-backend.onrender.com/check"),null)),B.j)},
 uB(a){return this.e.$1(a)},
 my(){return this.f.$0()}}
 A.PR.prototype={

@@ -91,7 +91,7 @@ bool toogleReadOnly = false;
 class _MyAppState extends State<MyApp> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final channel = WebSocketChannel.connect(
-      Uri.parse('ws://gartiicc-backend.onrender.com/'));
+      Uri.parse('wss://gartiicc-backend.onrender.com/'));
 
   TextEditingController chatController = TextEditingController();
   List listOfMessage = [];
