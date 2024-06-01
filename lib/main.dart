@@ -6,7 +6,7 @@ import 'package:x/painter.dart';
 import 'package:http/http.dart' as http;
 
 void main() {
-  runApp(MyApps());
+  runApp(const MyApps());
 }
 
 class MyApps extends StatelessWidget {
@@ -14,7 +14,7 @@ class MyApps extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       home: Name(),
     );
   }
@@ -38,7 +38,7 @@ class _NameState extends State<Name> {
   //? getkustofwords() returns a single word from backend in thee break section in painter
   Future getListOfWords() async {
     var response = await http.get(Uri.parse(
-        "https://gartiicc-backend.onrender.com/listofwords")); //! not list of word but the neext word in queue from backend
+        "http://localhost:8080/listofwords")); //! not list of word but the neext word in queue from backend
     return response.body;
   }
 
@@ -50,7 +50,7 @@ class _NameState extends State<Name> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("keep your name"),
+        title: const Text("keep your name"),
       ),
       body: Column(
         children: [
@@ -70,7 +70,7 @@ class _NameState extends State<Name> {
                   return MyApp(loginController.text, getListOfWords);
                 }));
               },
-              child: Text("Ok")),
+              child: const Text("Ok")),
         ],
       ),
     );
@@ -81,7 +81,8 @@ class MyApp extends StatefulWidget {
   final String currentName;
   final Future Function() getListOfWords;
   @override
-  MyApp(this.currentName, this.getListOfWords);
+  const MyApp(this.currentName, this.getListOfWords, {super.key});
+  @override
   State<MyApp> createState() => _MyAppState();
 }
 
@@ -90,8 +91,7 @@ bool toogleReadOnly = false;
 
 class _MyAppState extends State<MyApp> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  final channel = WebSocketChannel.connect(
-      Uri.parse('wss://gartiicc-backend.onrender.com/'));
+  final channel = WebSocketChannel.connect(Uri.parse('ws://localhost:8080/'));
 
   TextEditingController chatController = TextEditingController();
   List listOfMessage = [];
@@ -116,14 +116,13 @@ class _MyAppState extends State<MyApp> {
     // currentName=await http.get(Uri.parse("http://localhost:8080/listofwords"));
     var x = await http.post(
         Uri.parse(
-            "https://gartiicc-backend.onrender.com/currentcheck"), //!adds the current player in the list and returns the first player
+            "http://localhost:8080/currentcheck"), //!adds the current player in the list and returns the first player
         body: json.encode(widget.currentName));
     return x.body;
   }
 
   var responses;
   void sendDataToChannel(String text) {
-    print("ready to send ");
     Map<String, String> mapOfDataEntered = {
       "Name": widget.currentName,
       "Message": text,
@@ -153,14 +152,14 @@ class _MyAppState extends State<MyApp> {
       return showDialog(
           context: context,
           builder: ((context) => AlertDialog(
-                title: Text("Congratulation"),
-                content: Text("that the correct answer"),
+                title: const Text("Congratulation"),
+                content: const Text("that the correct answer"),
                 actions: [
                   ElevatedButton(
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    child: Text("OK"),
+                    child: const Text("OK"),
                   ),
                 ],
               )));
@@ -179,7 +178,7 @@ class _MyAppState extends State<MyApp> {
       drawer: Drawer(
         child: Column(
           children: [
-            DrawerHeader(
+            const DrawerHeader(
               decoration: BoxDecoration(
                 color: Colors.blue,
               ),
@@ -191,7 +190,7 @@ class _MyAppState extends State<MyApp> {
                 ),
               ),
             ),
-            Container(
+            SizedBox(
               height: 200,
               width: 200,
               child: StreamBuilder(
@@ -205,16 +204,16 @@ class _MyAppState extends State<MyApp> {
                           itemCount: responseList.length,
                           itemBuilder: (build, count) {
                             return ListTile(
-                              leading: Padding(
-                                padding: const EdgeInsets.only(
-                                    left: 10.0, right: 20.0),
+                              leading: const Padding(
+                                padding:
+                                    EdgeInsets.only(left: 10.0, right: 20.0),
                                 child: Icon(Icons.person_2_sharp),
                               ),
                               title: Text(responseList[count].toString()),
                             );
                           });
                     } else {
-                      return CircularProgressIndicator();
+                      return const CircularProgressIndicator();
                     }
                   }),
             ),
@@ -222,19 +221,19 @@ class _MyAppState extends State<MyApp> {
         ),
       ),
       appBar: AppBar(
-        title: Text(
-            'clone '), //! I HAVENOT ADDED THE REBUILD OF THE TOOGLEREADONLY ABA TYO KASARI GARNE HO BASED ON SOME VALUE GARNE HO KI HOINA BHANERA DISCUSS GARNA PARCHA .
+        title: const Text(
+            'gartic clone By aayamPokharel '), //! I HAVENOT ADDED THE REBUILD OF THE TOOGLEREADONLY ABA TYO KASARI GARNE HO BASED ON SOME VALUE GARNE HO KI HOINA BHANERA DISCUSS GARNA PARCHA .
         leading: IconButton(
           onPressed: () async {
-            var res = await http.get(
-                Uri.parse('https://gartiicc-backend.onrender.com/listofnames'));
+            var res =
+                await http.get(Uri.parse('http://localhost:8080/listofnames'));
 
-            Future.delayed(Duration(seconds: 2), () {
+            Future.delayed(const Duration(seconds: 1), () {
               drawerStream.add(res.body);
             });
             _scaffoldKey.currentState?.openDrawer();
           },
-          icon: Icon(Icons.menu),
+          icon: const Icon(Icons.menu),
         ),
       ),
       body: FutureBuilder(
@@ -242,15 +241,12 @@ class _MyAppState extends State<MyApp> {
               responses, //! responses compulsory cha cause esle add ni garirako cha the currentName to the list in the backend an return ing first  element which is irrelevant but the thiing will only be returned after the adding of element in the liist
           builder: (context, snapshots) {
             if (snapshots.connectionState == ConnectionState.done) {
-              print(snapshots.data);
-              print("🔥🔥🔥🔥");
               currentTurn = snapshots.data.toString();
               return StreamBuilder(
                 stream: messageStream,
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     listOfMessage.add(json.decode(snapshot.data.toString()));
-                    print(listOfMessage);
 
                     return SingleChildScrollView(
                       child: Column(
@@ -263,8 +259,8 @@ class _MyAppState extends State<MyApp> {
                                 itemCount: listOfMessage.length,
                                 itemBuilder: (context, ind) {
                                   return Padding(
-                                    padding: EdgeInsets.all(10),
-                                    child: Container(
+                                    padding: const EdgeInsets.all(10),
+                                    child: SizedBox(
                                       width: 222,
                                       height: 83,
                                       child: Text(
@@ -278,11 +274,7 @@ class _MyAppState extends State<MyApp> {
                               //! this controls the nullness of the ok button when answer is right .
                               stream: boolStreamController.stream,
                               builder: (context, snapshot) {
-                                print(snapshot.data);
-                                print("|||||||||||||||||||||||");
                                 if (snapshot.hasData) {
-                                  print(snapshot.data);
-                                  print("🔥🔥🔥🔥🔥");
                                   return Row(
                                     children: [
                                       Container(
@@ -338,7 +330,7 @@ class _MyAppState extends State<MyApp> {
                                                 chatController.text);
                                             chatController.text = "";
                                           },
-                                          child: Text("OK")),
+                                          child: const Text("OK")),
                                     ],
                                   );
                                 }
@@ -397,7 +389,7 @@ class _MyAppState extends State<MyApp> {
                                             null;
                                           }
                                         },
-                                        child: Text("OK")),
+                                        child: const Text("OK")),
                                   ],
                                 );
                               } else {
@@ -423,7 +415,7 @@ class _MyAppState extends State<MyApp> {
                                           insideOnPressed(chatController.text);
                                           chatController.text = "";
                                         },
-                                        child: Text("OK")),
+                                        child: const Text("OK")),
                                   ],
                                 );
                               }
@@ -436,7 +428,7 @@ class _MyAppState extends State<MyApp> {
                 },
               );
             } else {
-              return CircularProgressIndicator();
+              return const CircularProgressIndicator();
             }
           }),
     );

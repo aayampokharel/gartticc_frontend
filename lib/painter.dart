@@ -4,8 +4,6 @@ import 'dart:async';
 import 'dart:convert';
 //import 'dart:io';
 
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_drawing_board/flutter_drawing_board.dart';
 //import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -22,7 +20,7 @@ class Painter extends StatefulWidget {
   Future Function() getListOfWords;
 
   Painter(this.currentName, this.currentTurn, this.localStreamForTextField,
-      this.getListOfWords);
+      this.getListOfWords, {super.key});
 }
 
 class _PainterState extends State<Painter> {
@@ -59,11 +57,11 @@ class _PainterState extends State<Painter> {
   }
 
   final DrawingController drawingController = DrawingController();
-  final paintChannel = WebSocketChannel.connect(
-      Uri.parse('wss://gartiicc-backend.onrender.com/paint'));
+  final paintChannel =
+      WebSocketChannel.connect(Uri.parse('ws://localhost:8080/paint'));
 
-  final checkChannel = WebSocketChannel.connect(
-      Uri.parse('wss://gartiicc-backend.onrender.com/check'));
+  final checkChannel =
+      WebSocketChannel.connect(Uri.parse('ws://localhost:8080/check'));
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
@@ -74,8 +72,6 @@ class _PainterState extends State<Painter> {
           drawingController.clear();
           drawingController2.clear();
           if (snapshott.data == widget.currentName) {
-            //   print("hello brother");
-            print(snapshott.data);
             widget.localStreamForTextField(true);
 
             ///again setting readonly for the input field for drawer
@@ -86,7 +82,7 @@ class _PainterState extends State<Painter> {
                 Container(
                   //# THis is the text displayed for drawer.
                   width: 300,
-                  padding: EdgeInsets.all(10),
+                  padding: const EdgeInsets.all(10),
                   color: Colors.pink,
                   child: Text(singleValue.toString()),
                 ),
@@ -110,7 +106,7 @@ class _PainterState extends State<Painter> {
                     },
                     child: DrawingBoard(
                       controller: drawingController,
-                      background: Container(width: 300, height: 300),
+                      background: const SizedBox(width: 300, height: 300),
                       showDefaultActions: true,
                       showDefaultTools: true,
                     ),
@@ -128,7 +124,7 @@ class _PainterState extends State<Painter> {
             });
             return Container(
               color: Colors.red,
-              child: Text("take a break guys...... "),
+              child: const Text("take a break guys...... "),
             );
 
             /// below code is for display of drawn elements.
@@ -143,11 +139,11 @@ class _PainterState extends State<Painter> {
                         .decode(snapshots.data.toString())
                         .toList(); //!//!//!
 
-                    if (list.length == 0) {
+                    if (list.isEmpty) {
                       drawingController2.clear();
                     }
                     for (int i = 0; i < list.length; i++) {
-                      if (list.length == 0) {
+                      if (list.isEmpty) {
                         drawingController2.clear();
                         break;
                       }
@@ -178,10 +174,10 @@ class _PainterState extends State<Painter> {
                     child: Container(
                       width: 700,
                       height: 700,
-                      color: Color.fromARGB(255, 11, 185, 109),
+                      color: const Color.fromARGB(255, 11, 185, 109),
                       child: DrawingBoard(
                         controller: drawingController2,
-                        background: Container(width: 700, height: 600),
+                        background: const SizedBox(width: 700, height: 600),
                         showDefaultActions: false,
                         showDefaultTools: false,
                       ),
