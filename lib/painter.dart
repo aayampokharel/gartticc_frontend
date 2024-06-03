@@ -20,7 +20,8 @@ class Painter extends StatefulWidget {
   Future Function() getListOfWords;
 
   Painter(this.currentName, this.currentTurn, this.localStreamForTextField,
-      this.getListOfWords, {super.key});
+      this.getListOfWords,
+      {super.key});
 }
 
 class _PainterState extends State<Painter> {
