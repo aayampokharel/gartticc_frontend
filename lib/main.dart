@@ -116,13 +116,14 @@ class _MyAppState extends State<MyApp> {
     // currentName=await http.get(Uri.parse("http://localhost:8080/listofwords"));
     var x = await http.post(
         Uri.parse(
-            "http://localhost:8080/currentcheck"), //!adds the current player in the list and returns the first player
+            "http://localhost:8080/currentcheck"), //!adds the current player in the list and returns the first player ELSE THIS SHOULD BE MADE TO RECEIVE IF ALL ARE IN BREAK, THEN INSTEAD OF NAME I SHOULD GET THE BREAK THING .
         body: json.encode(widget.currentName));
     return x.body;
   }
 
   var responses;
   void sendDataToChannel(String text) {
+    //@ SEND MESSAGE .
     Map<String, String> mapOfDataEntered = {
       "Name": widget.currentName,
       "Message": text,
@@ -152,8 +153,8 @@ class _MyAppState extends State<MyApp> {
       return showDialog(
           context: context,
           builder: ((context) => AlertDialog(
-                title: const Text("Congratulation"),
-                content: const Text("that the correct answer"),
+                title: const Text("Congratulations"),
+                content: const Text("that's the correct answer"),
                 actions: [
                   ElevatedButton(
                     onPressed: () {
@@ -222,7 +223,7 @@ class _MyAppState extends State<MyApp> {
       ),
       appBar: AppBar(
         title: const Text(
-            'gartic clone By aayamPokharel '), //! I HAVENOT ADDED THE REBUILD OF THE TOOGLEREADONLY ABA TYO KASARI GARNE HO BASED ON SOME VALUE GARNE HO KI HOINA BHANERA DISCUSS GARNA PARCHA .
+            'gartic clone By Aayam Pokharel and Sahil Lamsal  '), //! I HAVENOT ADDED THE REBUILD OF THE TOOGLEREADONLY ABA TYO KASARI GARNE HO BASED ON SOME VALUE GARNE HO KI HOINA BHANERA DISCUSS GARNA PARCHA .
         leading: IconButton(
           onPressed: () async {
             var res =
@@ -238,194 +239,220 @@ class _MyAppState extends State<MyApp> {
       ),
       body: FutureBuilder(
           future:
-              responses, //! responses compulsory cha cause esle add ni garirako cha the currentName to the list in the backend an return ing first  element which is irrelevant but the thiing will only be returned after the adding of element in the liist
+              responses, //! responses compulsory cha cause esle add ni garirako cha the currentName to the list in the backend an return ing first  element which is irrelevant OR RETURNS BREAK IF ALL ARE IN BREAK but the thiing will only be returned after the adding of element in the liist
           builder: (context, snapshots) {
             if (snapshots.connectionState == ConnectionState.done) {
               currentTurn = snapshots.data.toString();
-              return StreamBuilder(
-                stream: messageStream,
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    listOfMessage.add(json.decode(snapshot.data.toString()));
+              return Column(
+                children: [
+                  StreamBuilder(
+                    stream: messageStream,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        listOfMessage
+                            .add(json.decode(snapshot.data.toString()));
 
-                    return SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          Container(
-                            height: 300,
-                            color: Colors.blueAccent,
-                            width: double.infinity,
-                            child: ListView.builder(
-                                itemCount: listOfMessage.length,
-                                itemBuilder: (context, ind) {
-                                  return Padding(
-                                    padding: const EdgeInsets.all(10),
-                                    child: SizedBox(
-                                      width: 222,
-                                      height: 83,
-                                      child: Text(
-                                        " ${listOfMessage[ind]["Name"]} :${listOfMessage[ind]["Message"]}",
-                                      ),
-                                    ),
-                                  );
-                                }),
-                          ), //!problem here  BEELOW:
-                          StreamBuilder<bool>(
-                              //! this controls the nullness of the ok button when answer is right .
-                              stream: boolStreamController.stream,
-                              builder: (context, snapshot) {
-                                if (snapshot.hasData) {
-                                  return Row(
-                                    children: [
-                                      Container(
-                                        color: Colors.green,
-                                        width: 500,
-                                        child: TextField(
-                                          readOnly: snapshot.data ?? false,
-                                          controller: chatController,
-                                          onSubmitted: (text) {
-                                            if (snapshot.data == false) {
-                                              insideOnPressed(text);
-                                              chatController.text = "";
-                                            } else {
-                                              null;
-                                            }
-                                          },
+                        return SingleChildScrollView(
+                          //#  BLUE ONE displayed after the first msg is sent else black color one.
+                          child: Column(
+                            children: [
+                              Container(
+                                height: 300,
+                                color: Colors.blueAccent,
+                                width: double.infinity,
+                                child: ListView.builder(
+                                    itemCount: listOfMessage.length,
+                                    itemBuilder: (context, ind) {
+                                      return Padding(
+                                        padding: const EdgeInsets.all(10),
+                                        child: SizedBox(
+                                          width: 222,
+                                          height: 83,
+                                          child: Text(
+                                            " ${listOfMessage[ind]["Name"]} :${listOfMessage[ind]["Message"]}",
+                                          ),
                                         ),
-                                      ),
-                                      // ElevatedButton(
-                                      //     onPressed: () {
-                                      //       if (snapshot.data == false) {
-                                      //         insideOnPressed(
-                                      //             chatController.text);
-                                      //         chatController.text = "";
-                                      //       } else {
-                                      //         null;
-                                      //       }
-                                      //     },
-                                      //     child: Text("OK")),
-                                    ],
-                                  );
-                                } else {
-                                  localStreamForTextField(true);
+                                      );
+                                    }),
+                              ), //!problem here  BELOW:
+                              StreamBuilder<bool>(
+                                  //! this controls the nullness of the ok button when answer is right .
+                                  stream: boolStreamController.stream,
+                                  builder: (context, noEntrySnapshot) {
+                                    if (snapshot.hasData) {
+                                      //? this below is not required as ?? false ko use nai bhaena ni after data is there .
+                                      print(noEntrySnapshot.data);
+                                      print("==================");
+                                      return Row(
+                                        children: [
+                                          Container(
+                                            color: Colors.purple,
+                                            width: 500,
+                                            child: TextField(
+                                              readOnly:
+                                                  noEntrySnapshot.data ?? false,
+                                              controller: chatController,
+                                              onSubmitted: (text) {
+                                                if (noEntrySnapshot.data ==
+                                                    false) {
+                                                  print(noEntrySnapshot.data);
+                                                  print("hello brother");
+                                                  print(
+                                                      "inside purple and false thing :false when false answer");
+                                                  insideOnPressed(text);
+                                                  chatController.text = "";
+                                                } else {
+                                                  print(
+                                                      "null bata print chai bhairako cha and data ni send bhairako cha wow ");
+                                                  null;
+                                                }
+                                              },
+                                            ),
+                                          ),
+                                          ElevatedButton(
+                                              onPressed: () {
+                                                if (noEntrySnapshot.data ==
+                                                    false) {
+                                                  insideOnPressed(
+                                                      chatController.text);
+                                                  chatController.text = "";
+                                                } else {
+                                                  null;
+                                                }
+                                              },
+                                              child: Text("OK")),
+                                        ],
+                                      );
+                                      // }
+                                      // else {
+                                      //   localStreamForTextField(true);
 
+                                      //   return Row(
+                                      //     //@ this is for boolean stream controller. only displayed when no data i.e. at first
+
+                                      //     //! this is the row which is displayed after one click on ok as yo streambuilder returns below code first when no data . after press, there is data and never that code is repeated, and this is the one which again goes for snapshot.hasdata==false as initially it has no data.
+                                      //     children: [
+                                      //       Container(
+                                      //         color: Colors.orange,
+                                      //         width: 500,
+                                      //         child: TextField(
+                                      //           readOnly: false,
+                                      //           controller: chatController,
+                                      //           onSubmitted: (txt) {
+                                      //             insideOnPressed(txt);
+                                      //             chatController.text = "";
+                                      //           },
+                                      //         ),
+                                      //       ),
+                                      //       ElevatedButton(
+                                      //           onPressed: () {
+                                      //             insideOnPressed(
+                                      //                 chatController.text);
+                                      //             chatController.text = "";
+                                      //           },
+                                      //           child: const Text("OK")),
+                                      //     ],
+                                      //   );
+                                    } else {
+                                      return const CircularProgressIndicator();
+                                    }
+                                  }),
+
+                              // Painter(widget.currentName, currentTurn,
+                              //  localStreamForTextField, widget.getListOfWords),
+                            ],
+                          ),
+                        );
+                      }
+                      if (snapshot.hasError) {
+                        return Text('Error: ${snapshot.error}');
+                      }
+
+                      //? this is returned when there is not data(only once) but if msg is not sent then this is the one that persists for blue messgage.but anyone once sends message this is never displayed in anyone except absolute new players.
+                      return SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            Container(
+                              height: 300,
+                              color: Colors.black,
+                              width: double.infinity,
+                            ),
+                            StreamBuilder<bool>(
+                                //# this controls the nullness of the ok button when answer is right .
+                                stream: boolStreamController.stream,
+                                builder: (context, initialSnapshot) {
                                   return Row(
-                                    //! this is the row which is displayed after one click on ok as yo streambuilder returns below code first when no data . after press, there is data and never that code is repeated, and this is the one which again goes for snapshot.hasdata==false as initially it has no data.
                                     children: [
                                       Container(
-                                        color: Colors.white,
+                                        color: Colors.brown,
                                         width: 500,
                                         child: TextField(
                                           readOnly: false,
                                           controller: chatController,
-                                          onSubmitted: (txt) {
-                                            insideOnPressed(txt);
+                                          onSubmitted: (txts) {
+                                            // if (initialSnapshot.data == false) {
+                                            //  print("inside brown once and false");
+                                            insideOnPressed(
+                                                chatController.text);
                                             chatController.text = "";
+                                            // } else {
+                                            //   null;
+                                            // }
                                           },
                                         ),
                                       ),
                                       ElevatedButton(
                                           onPressed: () {
-                                            insideOnPressed(
-                                                chatController.text);
-                                            chatController.text = "";
+                                            if (initialSnapshot.data == false) {
+                                              insideOnPressed(
+                                                  chatController.text);
+                                              chatController.text = "";
+                                            } else {
+                                              null;
+                                            }
                                           },
                                           child: const Text("OK")),
                                     ],
                                   );
-                                }
-                              }),
+                                  //}
+                                  //else {
+                                  //   localStreamForTextField(true);
 
-                          Painter(widget.currentName, currentTurn,
-                              localStreamForTextField, widget.getListOfWords),
-                        ],
-                      ),
-                    );
-                  }
-                  if (snapshot.hasError) {
-                    return Text('Error: ${snapshot.error}');
-                  }
-
-                  //! this is returned when there i no daat a (only once)
-                  return SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        Container(
-                          height: 300,
-                          color: Colors.black,
-                          width: double.infinity,
+                                  //   return Row(
+                                  //     //@ this is the row which is displayed after one click on ok as yo streambuilder returns below code first when no data . after press, there is data and never that code is repeated, and this is the one which again goes for snapshot.hasdata==false as initially it has no data.
+                                  //     children: [
+                                  //       Container(
+                                  //         color: Colors.white,
+                                  //         width: 500,
+                                  //         child: TextField(
+                                  //           readOnly: false,
+                                  //           controller: chatController,
+                                  //           onSubmitted: (t) {
+                                  //             insideOnPressed(chatController.text);
+                                  //             chatController.text = "";
+                                  //           },
+                                  //         ),
+                                  //       ),
+                                  //       ElevatedButton(
+                                  //           onPressed: () {
+                                  //             insideOnPressed(chatController.text);
+                                  //             chatController.text = "";
+                                  //           },
+                                  //           child: const Text("OK")),
+                                  //     ],
+                                  //   );
+                                  // }
+                                }),
+                            //Painter(widget.currentName, currentTurn,
+                            //localStreamForTextField, widget.getListOfWords),
+                          ],
                         ),
-                        StreamBuilder<bool>(
-                            //! this controls the nullness of the ok button when answer is right .
-                            stream: boolStreamController.stream,
-                            builder: (context, snapshot) {
-                              if (snapshot.hasData) {
-                                return Row(
-                                  children: [
-                                    Container(
-                                      color: Colors.green,
-                                      width: 500,
-                                      child: TextField(
-                                        readOnly: snapshot.data ?? false,
-                                        controller: chatController,
-                                        onSubmitted: (txts) {
-                                          if (snapshot.data == false) {
-                                            insideOnPressed(
-                                                chatController.text);
-                                            chatController.text = "";
-                                          } else {
-                                            null;
-                                          }
-                                        },
-                                      ),
-                                    ),
-                                    ElevatedButton(
-                                        onPressed: () {
-                                          if (snapshot.data == false) {
-                                            insideOnPressed(
-                                                chatController.text);
-                                            chatController.text = "";
-                                          } else {
-                                            null;
-                                          }
-                                        },
-                                        child: const Text("OK")),
-                                  ],
-                                );
-                              } else {
-                                localStreamForTextField(true);
-
-                                return Row(
-                                  //! this is the row which is displayed after one click on ok as yo streambuilder returns below code first when no data . after press, there is data and never that code is repeated, and this is the one which again goes for snapshot.hasdata==false as initially it has no data.
-                                  children: [
-                                    Container(
-                                      color: Colors.white,
-                                      width: 500,
-                                      child: TextField(
-                                        readOnly: false,
-                                        controller: chatController,
-                                        onSubmitted: (t) {
-                                          insideOnPressed(chatController.text);
-                                          chatController.text = "";
-                                        },
-                                      ),
-                                    ),
-                                    ElevatedButton(
-                                        onPressed: () {
-                                          insideOnPressed(chatController.text);
-                                          chatController.text = "";
-                                        },
-                                        child: const Text("OK")),
-                                  ],
-                                );
-                              }
-                            }),
-                        Painter(widget.currentName, currentTurn,
-                            localStreamForTextField, widget.getListOfWords),
-                      ],
-                    ),
-                  );
-                },
+                      );
+                    },
+                  ),
+                  Painter(widget.currentName, currentTurn,
+                      localStreamForTextField, widget.getListOfWords),
+                ],
               );
             } else {
               return const CircularProgressIndicator();

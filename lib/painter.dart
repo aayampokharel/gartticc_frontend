@@ -16,7 +16,7 @@ class Painter extends StatefulWidget {
   State<Painter> createState() => _PainterState();
   String currentName;
   String currentTurn;
-  Function localStreamForTextField;
+  Function(bool) localStreamForTextField;
   Future Function() getListOfWords;
 
   Painter(this.currentName, this.currentTurn, this.localStreamForTextField,
@@ -92,7 +92,7 @@ class _PainterState extends State<Painter> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 TweenAnimationBuilder(
-                  duration: const Duration(milliseconds: 6500),
+                  duration: const Duration(milliseconds: 19500),
                   tween: Tween<double>(begin: 0, end: 300),
                   builder:
                       (BuildContext context, dynamic value, Widget? child) {
@@ -141,11 +141,13 @@ class _PainterState extends State<Painter> {
 
             ///break is the data sent in the stream after a certain time for drawer to change the drawing power to someone else.
           } else if ((snapshott.data.toString() == "Break")) {
-            widget.localStreamForTextField(false);
+            widget.localStreamForTextField(
+                false); //! this is for not letting yellow player to write. working ...feri kina rewrite bhayo bhanda cause this painter is inside the streambuilder and already said its like server and setstate waiting for data and rebuilding the thing . so painter lai bahira pathaune from main.
 
             widget.getListOfWords().then((value) {
               singleValue = jsonDecode(value).toString();
             });
+            toogleValueForProgressBar = true;
             return Container(
               color: Colors.red,
               child: const Text("take a break guys...... "),
@@ -164,17 +166,18 @@ class _PainterState extends State<Painter> {
                       if (fsnapshot.hasData) {
                         if (!toogleValueForProgressBar) {
                           toogleValueForProgressBar = true;
-                          var responseIntegerTime =
-                              int.parse(fsnapshot.data!) * 1000 + 600;
-                          responseIntegerTime = responseIntegerTime >= 7000
+                          var responseDoubleTime =
+                              double.parse(fsnapshot.data!) * 1000 + 600;
+                          responseDoubleTime = responseDoubleTime >= 7000
                               ? 6600
-                              : responseIntegerTime;
+                              : responseDoubleTime;
 
                           return TweenAnimationBuilder(
                             duration: Duration(
-                                milliseconds: 7000 - responseIntegerTime),
+                                milliseconds: 7000 -
+                                    int.parse(responseDoubleTime.toString())),
                             tween: Tween<double>(
-                                begin: (responseIntegerTime / 1000) * 45.5,
+                                begin: (responseDoubleTime / 1000) * 45.45,
                                 end: 300),
                             builder: (BuildContext context, dynamic value,
                                 Widget? child) {
@@ -187,7 +190,7 @@ class _PainterState extends State<Painter> {
                           );
                         } else {
                           return TweenAnimationBuilder(
-                            duration: const Duration(milliseconds: 6500),
+                            duration: const Duration(milliseconds: 19500),
                             tween: Tween<double>(begin: 0, end: 300),
                             builder: (BuildContext context, dynamic value,
                                 Widget? child) {
