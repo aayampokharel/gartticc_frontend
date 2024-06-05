@@ -5,7 +5,7 @@ import 'dart:convert';
 //import 'dart:io';
 
 import 'package:flutter_drawing_board/flutter_drawing_board.dart';
-//import 'package:http/http.dart' as http;
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_drawing_board/paint_contents.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -20,7 +20,8 @@ class Painter extends StatefulWidget {
   Future Function() getListOfWords;
 
   Painter(this.currentName, this.currentTurn, this.localStreamForTextField,
-      this.getListOfWords, {super.key});
+      this.getListOfWords,
+      {super.key});
 }
 
 class _PainterState extends State<Painter> {
@@ -40,10 +41,19 @@ class _PainterState extends State<Painter> {
   var paintStream;
   var checkStream;
 
+  var toogleValueForProgressBar = false;
+
+  Future<String> forProgressBar() async {
+    var response =
+        await http.get(Uri.parse("http://localhost:8080/progressbar"));
+    return response.body;
+  }
+
   @override
   void initState() {
     //@ alertWebsocket() is called to make input field is readonly while player is drawing
     super.initState();
+
     widget.getListOfWords().then((value) {
       setState(() {
         singleValue = jsonDecode(value).toString();
@@ -53,7 +63,8 @@ class _PainterState extends State<Painter> {
       alertWebSocket();
     }
     paintStream = paintChannel.stream.asBroadcastStream();
-    checkStream = checkChannel.stream.asBroadcastStream();
+    checkStream = checkChannel.stream
+        .asBroadcastStream(); //@ this makes other things depend on it .
   }
 
   final DrawingController drawingController = DrawingController();
@@ -78,7 +89,20 @@ class _PainterState extends State<Painter> {
           }
           if (snapshott.data == widget.currentName && snapshott.hasData) {
             return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                TweenAnimationBuilder(
+                  duration: const Duration(milliseconds: 6500),
+                  tween: Tween<double>(begin: 0, end: 300),
+                  builder:
+                      (BuildContext context, dynamic value, Widget? child) {
+                    return Container(
+                      height: 20,
+                      width: value,
+                      color: Colors.deepOrange,
+                    );
+                  },
+                ),
                 Container(
                   //# THis is the text displayed for drawer.
                   width: 300,
@@ -131,59 +155,109 @@ class _PainterState extends State<Painter> {
           } else {
             //@ THIS is called for non-drawers ones.
             widget.localStreamForTextField(false);
-            return StreamBuilder(
-                stream: paintStream,
-                builder: (context, snapshots) {
-                  if (snapshots.hasData) {
-                    List list = json
-                        .decode(snapshots.data.toString())
-                        .toList(); //!//!//!
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                FutureBuilder(
+                    future: forProgressBar(),
+                    builder: (context, fsnapshot) {
+                      if (fsnapshot.hasData) {
+                        if (!toogleValueForProgressBar) {
+                          toogleValueForProgressBar = true;
+                          var responseIntegerTime =
+                              int.parse(fsnapshot.data!) * 1000 + 600;
+                          responseIntegerTime = responseIntegerTime >= 7000
+                              ? 6600
+                              : responseIntegerTime;
 
-                    if (list.isEmpty) {
-                      drawingController2.clear();
-                    }
-                    for (int i = 0; i < list.length; i++) {
-                      if (list.isEmpty) {
-                        drawingController2.clear();
-                        break;
+                          return TweenAnimationBuilder(
+                            duration: Duration(
+                                milliseconds: 7000 - responseIntegerTime),
+                            tween: Tween<double>(
+                                begin: (responseIntegerTime / 1000) * 45.5,
+                                end: 300),
+                            builder: (BuildContext context, dynamic value,
+                                Widget? child) {
+                              return Container(
+                                height: 20,
+                                width: value,
+                                color: Colors.deepOrange,
+                              );
+                            },
+                          );
+                        } else {
+                          return TweenAnimationBuilder(
+                            duration: const Duration(milliseconds: 6500),
+                            tween: Tween<double>(begin: 0, end: 300),
+                            builder: (BuildContext context, dynamic value,
+                                Widget? child) {
+                              return Container(
+                                height: 20,
+                                width: value,
+                                color: Colors.deepOrange,
+                              );
+                            },
+                          );
+                        }
+                      } else {
+                        return const CircularProgressIndicator();
                       }
+                    }),
+                StreamBuilder(
+                    stream: paintStream,
+                    builder: (context, snapshots) {
+                      if (snapshots.hasData) {
+                        List list = json
+                            .decode(snapshots.data.toString())
+                            .toList(); //!//!//!
 
-                      if (list[i]["type"] == "SimpleLine") {
-                        drawingController2.addContents(
-                            <PaintContent>[SimpleLine.fromJson(list[i])]);
+                        if (list.isEmpty) {
+                          drawingController2.clear();
+                        }
+                        for (int i = 0; i < list.length; i++) {
+                          if (list.isEmpty) {
+                            drawingController2.clear();
+                            break;
+                          }
+
+                          if (list[i]["type"] == "SimpleLine") {
+                            drawingController2.addContents(
+                                <PaintContent>[SimpleLine.fromJson(list[i])]);
+                          }
+                          if (list[i]["type"] == "SmoothLine") {
+                            drawingController2.addContents(
+                                <PaintContent>[SmoothLine.fromJson(list[i])]);
+                          }
+                          if (list[i]["type"] == "StraightLine") {
+                            drawingController2.addContents(
+                                <PaintContent>[StraightLine.fromJson(list[i])]);
+                          }
+                          if (list[i]["type"] == "Rectangle") {
+                            drawingController2.addContents(
+                                <PaintContent>[Rectangle.fromJson(list[i])]);
+                          }
+                          if (list[i]["type"] == "Circle") {
+                            drawingController2.addContents(
+                                <PaintContent>[Circle.fromJson(list[i])]);
+                          }
+                        }
                       }
-                      if (list[i]["type"] == "SmoothLine") {
-                        drawingController2.addContents(
-                            <PaintContent>[SmoothLine.fromJson(list[i])]);
-                      }
-                      if (list[i]["type"] == "StraightLine") {
-                        drawingController2.addContents(
-                            <PaintContent>[StraightLine.fromJson(list[i])]);
-                      }
-                      if (list[i]["type"] == "Rectangle") {
-                        drawingController2.addContents(
-                            <PaintContent>[Rectangle.fromJson(list[i])]);
-                      }
-                      if (list[i]["type"] == "Circle") {
-                        drawingController2.addContents(
-                            <PaintContent>[Circle.fromJson(list[i])]);
-                      }
-                    }
-                  }
-                  return IgnorePointer(
-                    child: Container(
-                      width: 700,
-                      height: 700,
-                      color: const Color.fromARGB(255, 11, 185, 109),
-                      child: DrawingBoard(
-                        controller: drawingController2,
-                        background: const SizedBox(width: 700, height: 600),
-                        showDefaultActions: false,
-                        showDefaultTools: false,
-                      ),
-                    ),
-                  );
-                });
+                      return IgnorePointer(
+                        child: Container(
+                          width: 300,
+                          height: 300,
+                          color: const Color.fromARGB(255, 11, 185, 109),
+                          child: DrawingBoard(
+                            controller: drawingController2,
+                            background: const SizedBox(width: 300, height: 300),
+                            showDefaultActions: false,
+                            showDefaultTools: false,
+                          ),
+                        ),
+                      );
+                    }),
+              ],
+            );
           }
         });
   }
