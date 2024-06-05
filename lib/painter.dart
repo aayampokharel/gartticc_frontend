@@ -168,16 +168,17 @@ class _PainterState extends State<Painter> {
                           toogleValueForProgressBar = true;
                           var responseDoubleTime =
                               double.parse(fsnapshot.data!) * 1000 + 600;
-                          responseDoubleTime = responseDoubleTime >= 7000
-                              ? 6600
+                          responseDoubleTime = responseDoubleTime >= 19600
+                              ? 19000
                               : responseDoubleTime;
 
                           return TweenAnimationBuilder(
                             duration: Duration(
-                                milliseconds: 7000 -
+                                milliseconds: 19600 -
                                     int.parse(responseDoubleTime.toString())),
                             tween: Tween<double>(
-                                begin: (responseDoubleTime / 1000) * 45.45,
+                                begin: (responseDoubleTime / 1000) *
+                                    15, // iineach second 15 15 ko rate le bhyauna parcha animatiioin.
                                 end: 300),
                             builder: (BuildContext context, dynamic value,
                                 Widget? child) {
@@ -190,7 +191,7 @@ class _PainterState extends State<Painter> {
                           );
                         } else {
                           return TweenAnimationBuilder(
-                            duration: const Duration(milliseconds: 19500),
+                            duration: const Duration(milliseconds: 19600),
                             tween: Tween<double>(begin: 0, end: 300),
                             builder: (BuildContext context, dynamic value,
                                 Widget? child) {
