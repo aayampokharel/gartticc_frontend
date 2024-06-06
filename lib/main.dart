@@ -95,7 +95,7 @@ class _MyAppState extends State<MyApp> {
 
   TextEditingController chatController = TextEditingController();
   List listOfMessage = [];
-  StreamController<bool> boolStreamController = StreamController();
+  StreamController<bool> boolStreamController = StreamController.broadcast();
 
   void localStreamForTextField(bool value) {
     //! this is used for the readonly for textfield after right answr setting thing .
