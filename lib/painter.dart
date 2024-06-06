@@ -36,7 +36,8 @@ class _PainterState extends State<Painter> {
 
 //@ alertWebsocket() is for adding true so that the input field is readonly:true
   void alertWebSocket() {
-    checkChannel.sink.add("true");
+    checkChannel.sink.add(
+        "true"); ////watch out for the UI AS THIS THING  IS REBUILT 3 TIMES INITIALLY.(Not good)
   }
 
   var paintStream;
@@ -62,6 +63,7 @@ class _PainterState extends State<Painter> {
             singleValue; //! this is causing the initial rebuild of widget which is not good dbecause of setstate. or its another issue. but 500ms bhitra there is setstate running .
       });
     });
+
     if (widget.currentName == widget.currentTurn) {
       alertWebSocket();
     }
@@ -83,6 +85,7 @@ class _PainterState extends State<Painter> {
 
         /// this is for checking if the turn is this particular user or not
         builder: (context, snapshott) {
+          print("hello 💦💦💦💦💦");
           drawingController.clear();
           drawingController2.clear();
           singleValue = localName;
@@ -146,12 +149,13 @@ class _PainterState extends State<Painter> {
             ///break is the data sent in the stream after a certain time for drawer to change the drawing power to someone else.
           } else if ((snapshott.data.toString() == "Break")) {
             singleValue = "";
-            widget.localStreamForTextField(
-                false); //! this is for not letting yellow player to write. working ...feri kina rewrite bhayo bhanda cause this painter is inside the streambuilder and already said its like server and setstate waiting for data and rebuilding the thing . so painter lai bahira pathaune from main.
+            print("break ==========");
+            //! this is for not letting yellow player to write. working ...feri kina rewrite bhayo bhanda cause this painter is inside the streambuilder and already said its like server and setstate waiting for data and rebuilding the thing . so painter lai bahira pathaune from main.
 
             widget.getListOfWords().then((value) {
               localName = jsonDecode(value).toString();
             });
+
             toogleValueForProgressBar = true;
             return Container(
               color: Colors.red,

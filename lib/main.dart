@@ -89,6 +89,9 @@ class MyApp extends StatefulWidget {
 //bool toogleHasData = true;
 bool toogleReadOnly = false;
 
+var toogleForTextFieldIfTrue =
+    false; //@ if true after hitting correct answer , the client should be able to talk in break
+
 class _MyAppState extends State<MyApp> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final channel = WebSocketChannel.connect(Uri.parse('ws://localhost:8080/'));
@@ -140,14 +143,17 @@ class _MyAppState extends State<MyApp> {
     // forDrawer().then((value) => drawerStream.add(value));
     responses = timerForName();
 
-    //
     messageStream = channel.stream.asBroadcastStream();
+    sendDataToChannel(
+        " JOINED THE CONVERSATION========="); //this is actually for removing the bug of null value in textfield.
   }
 
   dynamic insideOnPressed(String str) {
     // toogleHasData = false;
     if (singleValue == str) {
       if (singleValue != "") {
+        toogleForTextFieldIfTrue =
+            true; //@ if true , the client should be able to talk in break
         localStreamForTextField(true);
         sendDataToChannel("GAVE CORRECT ANSWER");
 
@@ -355,9 +361,6 @@ class _MyAppState extends State<MyApp> {
                                         return const CircularProgressIndicator();
                                       }
                                     }),
-
-                                // Painter(widget.currentName, currentTurn,
-                                //  localStreamForTextField, widget.getListOfWords),
                               ],
                             ),
                           );
@@ -384,7 +387,8 @@ class _MyAppState extends State<MyApp> {
                                         color: Colors.brown,
                                         width: 500,
                                         child: TextField(
-                                          readOnly: false,
+                                          readOnly:
+                                              initialSnapshot.data ?? false,
                                           controller: chatController,
                                           onSubmitted: (txts) {
                                             // if (initialSnapshot.data == false) {
@@ -411,37 +415,9 @@ class _MyAppState extends State<MyApp> {
                                           child: const Text("OK")),
                                     ],
                                   );
-                                  //}
-                                  //else {
-                                  //   localStreamForTextField(true);
 
-                                  //   return Row(
                                   //     //@ this is the row which is displayed after one click on ok as yo streambuilder returns below code first when no data . after press, there is data and never that code is repeated, and this is the one which again goes for snapshot.hasdata==false as initially it has no data.
-                                  //     children: [
-                                  //       Container(
-                                  //         color: Colors.white,
-                                  //         width: 500,
-                                  //         child: TextField(
-                                  //           readOnly: false,
-                                  //           controller: chatController,
-                                  //           onSubmitted: (t) {
-                                  //             insideOnPressed(chatController.text);
-                                  //             chatController.text = "";
-                                  //           },
-                                  //         ),
-                                  //       ),
-                                  //       ElevatedButton(
-                                  //           onPressed: () {
-                                  //             insideOnPressed(chatController.text);
-                                  //             chatController.text = "";
-                                  //           },
-                                  //           child: const Text("OK")),
-                                  //     ],
-                                  //   );
-                                  // }
                                 }),
-                            //Painter(widget.currentName, currentTurn,
-                            //localStreamForTextField, widget.getListOfWords),
                           ],
                         );
                       },
