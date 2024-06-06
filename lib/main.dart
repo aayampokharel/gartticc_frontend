@@ -147,23 +147,25 @@ class _MyAppState extends State<MyApp> {
   dynamic insideOnPressed(String str) {
     // toogleHasData = false;
     if (singleValue == str) {
-      localStreamForTextField(true);
-      sendDataToChannel("GAVE CORRECT ANSWER");
+      if (singleValue != "") {
+        localStreamForTextField(true);
+        sendDataToChannel("GAVE CORRECT ANSWER");
 
-      return showDialog(
-          context: context,
-          builder: ((context) => AlertDialog(
-                title: const Text("Congratulations"),
-                content: const Text("that's the correct answer"),
-                actions: [
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: const Text("OK"),
-                  ),
-                ],
-              )));
+        return showDialog(
+            context: context,
+            builder: ((context) => AlertDialog(
+                  title: const Text("Congratulations"),
+                  content: const Text("that's the correct answer"),
+                  actions: [
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text("OK"),
+                    ),
+                  ],
+                )));
+      }
     } else {
       sendDataToChannel(str);
     }
@@ -297,15 +299,9 @@ class _MyAppState extends State<MyApp> {
                                                 onSubmitted: (text) {
                                                   if (noEntrySnapshot.data ==
                                                       false) {
-                                                    print(noEntrySnapshot.data);
-                                                    print("hello brother");
-                                                    print(
-                                                        "inside purple and false thing :false when false answer");
                                                     insideOnPressed(text);
                                                     chatController.text = "";
                                                   } else {
-                                                    print(
-                                                        "null bata print chai bhairako cha and data ni send bhairako cha wow ");
                                                     null;
                                                   }
                                                 },

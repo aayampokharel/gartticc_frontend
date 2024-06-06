@@ -25,6 +25,7 @@ class Painter extends StatefulWidget {
 }
 
 class _PainterState extends State<Painter> {
+  var localName;
   DrawingController drawingController2 = DrawingController();
 
   void _getJsonList() async {
@@ -57,6 +58,8 @@ class _PainterState extends State<Painter> {
     widget.getListOfWords().then((value) {
       setState(() {
         singleValue = jsonDecode(value).toString();
+        localName =
+            singleValue; //! this is causing the initial rebuild of widget which is not good dbecause of setstate. or its another issue. but 500ms bhitra there is setstate running .
       });
     });
     if (widget.currentName == widget.currentTurn) {
@@ -82,6 +85,7 @@ class _PainterState extends State<Painter> {
         builder: (context, snapshott) {
           drawingController.clear();
           drawingController2.clear();
+          singleValue = localName;
           if (snapshott.data == widget.currentName) {
             widget.localStreamForTextField(true);
 
@@ -141,11 +145,12 @@ class _PainterState extends State<Painter> {
 
             ///break is the data sent in the stream after a certain time for drawer to change the drawing power to someone else.
           } else if ((snapshott.data.toString() == "Break")) {
+            singleValue = "";
             widget.localStreamForTextField(
                 false); //! this is for not letting yellow player to write. working ...feri kina rewrite bhayo bhanda cause this painter is inside the streambuilder and already said its like server and setstate waiting for data and rebuilding the thing . so painter lai bahira pathaune from main.
 
             widget.getListOfWords().then((value) {
-              singleValue = jsonDecode(value).toString();
+              localName = jsonDecode(value).toString();
             });
             toogleValueForProgressBar = true;
             return Container(
