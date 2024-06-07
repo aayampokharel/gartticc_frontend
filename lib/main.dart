@@ -155,7 +155,8 @@ class _MyAppState extends State<MyApp> {
         toogleForTextFieldIfTrue =
             true; //@ if true , the client should be able to talk in break
         localStreamForTextField(true);
-        sendDataToChannel("GAVE CORRECT ANSWER");
+        //  sendDataToChannel("GAVE CORRECT ANSWER");
+        sendDataToChannel(str);
 
         return showDialog(
             context: context,
