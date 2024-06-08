@@ -1,3 +1,11 @@
+//#c5c5c5 (background colorof the speed clockimage ) is the required color theme here . i am going to create some old magic thing here.
+//@ for background
+/// #C4C3C4
+////use this as white background color ,
+//? #100F10 is black color to be used . use it as theme.
+// //#5E5C5D use this as another gray color .
+//!https://coolors.co/5e5c5d-c4c3c4-c2c0c2-100f10-c4c1c3
+
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'dart:async';
