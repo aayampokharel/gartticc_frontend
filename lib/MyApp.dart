@@ -15,7 +15,6 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _MyAppState();
 }
 
-//bool toogleHasData = true;
 bool toogleReadOnly = false;
 
 var toogleForTextFieldIfTrue =
@@ -34,18 +33,11 @@ class _MyAppState extends State<MyApp> {
     boolStreamController.add(value);
   }
 
-  // StreamController drawerStream = StreamController();
   String currentTurn = "nope";
   StreamController drawerStream = StreamController();
 //! names channel is to get the lit of players wheen drawer is
-  // void forDrawer()async  {
-  //    var response=await http.get(Uri.parse('http://localhost:8080/listofnames'));
-  // drawerStream.add(response.body);
-
-  // }
 
   Future timerForName() async {
-    // currentName=await http.get(Uri.parse("http://localhost:8080/listofwords"));
     var x = await http.post(
         Uri.parse(
             "http://localhost:8080/currentcheck"), //!adds the current player in the list and returns the first player ELSE THIS SHOULD BE MADE TO RECEIVE IF ALL ARE IN BREAK, THEN INSTEAD OF NAME I SHOULD GET THE BREAK THING .
@@ -73,8 +65,7 @@ class _MyAppState extends State<MyApp> {
     responses = timerForName();
 
     messageStream = channel.stream.asBroadcastStream();
-    sendDataToChannel(
-        " JOINED THE CONVERSATION========="); //this is actually for removing the bug of null value in textfield.
+    sendDataToChannel(" JOINED THE CONVERSATION=========");
   }
 
   dynamic insideOnPressed(String str) {
@@ -84,7 +75,7 @@ class _MyAppState extends State<MyApp> {
         toogleForTextFieldIfTrue =
             true; //@ if true , the client should be able to talk in break
         localStreamForTextField(true);
-        //  sendDataToChannel("GAVE CORRECT ANSWER");
+
         sendDataToChannel(str);
 
         return showDialog(
@@ -107,11 +98,9 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  // bool forDrawerUrl = true;
   List namelist = [];
   @override
   Widget build(BuildContext context) {
-    // toogleReadOnly = false;
     return Scaffold(
       key: _scaffoldKey,
       drawer: Drawer(
@@ -137,7 +126,7 @@ class _MyAppState extends State<MyApp> {
                   builder: (context, snap) {
                     if (snap.hasData) {
                       List responseList = [];
-                      //responseList.add(json.decode(snap.data!.toString()));
+
                       responseList = json.decode((snap.data!));
                       return ListView.builder(
                           itemCount: responseList.length,
@@ -161,7 +150,7 @@ class _MyAppState extends State<MyApp> {
       ),
       appBar: AppBar(
         title: const Text(
-            'gartic clone By Aayam Pokharel and Sahil Lamsal  '), //! I HAVENOT ADDED THE REBUILD OF THE TOOGLEREADONLY ABA TYO KASARI GARNE HO BASED ON SOME VALUE GARNE HO KI HOINA BHANERA DISCUSS GARNA PARCHA .
+            'Drawsaurus '), //! I HAVENOT ADDED THE REBUILD OF THE TOOGLEREADONLY ABA TYO KASARI GARNE HO BASED ON SOME VALUE GARNE HO KI HOINA BHANERA DISCUSS GARNA PARCHA .
         leading: IconButton(
           onPressed: () async {
             var res =
@@ -220,8 +209,7 @@ class _MyAppState extends State<MyApp> {
                                     builder: (context, noEntrySnapshot) {
                                       if (snapshot.hasData) {
                                         //? this below is not required as ?? false ko use nai bhaena ni after data is there .
-                                        print(noEntrySnapshot.data);
-                                        print("==================");
+
                                         return Row(
                                           children: [
                                             Container(
@@ -257,36 +245,10 @@ class _MyAppState extends State<MyApp> {
                                                 child: Text("OK")),
                                           ],
                                         );
-                                        // }
-                                        // else {
-                                        //   localStreamForTextField(true);
 
-                                        //   return Row(
                                         //     //@ this is for boolean stream controller. only displayed when no data i.e. at first
 
                                         //     //! this is the row which is displayed after one click on ok as yo streambuilder returns below code first when no data . after press, there is data and never that code is repeated, and this is the one which again goes for snapshot.hasdata==false as initially it has no data.
-                                        //     children: [
-                                        //       Container(
-                                        //         color: Colors.orange,
-                                        //         width: 500,
-                                        //         child: TextField(
-                                        //           readOnly: false,
-                                        //           controller: chatController,
-                                        //           onSubmitted: (txt) {
-                                        //             insideOnPressed(txt);
-                                        //             chatController.text = "";
-                                        //           },
-                                        //         ),
-                                        //       ),
-                                        //       ElevatedButton(
-                                        //           onPressed: () {
-                                        //             insideOnPressed(
-                                        //                 chatController.text);
-                                        //             chatController.text = "";
-                                        //           },
-                                        //           child: const Text("OK")),
-                                        //     ],
-                                        //   );
                                       } else {
                                         return const CircularProgressIndicator();
                                       }
@@ -321,8 +283,6 @@ class _MyAppState extends State<MyApp> {
                                               initialSnapshot.data ?? false,
                                           controller: chatController,
                                           onSubmitted: (txts) {
-                                            // if (initialSnapshot.data == false) {
-                                            //  print("inside brown once and false");
                                             insideOnPressed(
                                                 chatController.text);
                                             chatController.text = "";
