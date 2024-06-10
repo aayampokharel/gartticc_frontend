@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:x/CorrectDialogue.dart';
 import 'package:x/painter.dart';
 import 'package:x/main.dart';
 import 'package:http/http.dart' as http;
@@ -78,20 +79,7 @@ class _MyAppState extends State<MyApp> {
 
         sendDataToChannel(str);
 
-        return showDialog(
-            context: context,
-            builder: ((context) => AlertDialog(
-                  title: const Text("Congratulations"),
-                  content: const Text("that's the correct answer"),
-                  actions: [
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: const Text("OK"),
-                    ),
-                  ],
-                )));
+        return showCorrectDialog(context);
       }
     } else {
       sendDataToChannel(str);

@@ -59,7 +59,7 @@ class _NameState extends State<Name> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xffc5c5c5),
+      backgroundColor: const Color(0xffc5c5c5),
       appBar: AppBar(
         title: const Text("keep your name"),
       ),
