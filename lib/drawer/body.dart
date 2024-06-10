@@ -3,9 +3,10 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:x/logic/drawerStream.dart';
 
 class Body extends StatefulWidget {
-  final StreamController drawerStream;
+  final DrawerStream drawerStream;
   // final StreamController drawerStream = StreamController();
   const Body({required this.drawerStream, super.key});
 
@@ -20,7 +21,7 @@ class _BodyState extends State<Body> {
       height: 200,
       width: 200,
       child: StreamBuilder(
-          stream: widget.drawerStream.stream.asBroadcastStream(),
+          stream: widget.drawerStream.broadcastStream,
           builder: (context, snap) {
             if (snap.hasData) {
               List responseList = [];

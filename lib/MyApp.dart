@@ -8,6 +8,7 @@ import 'package:x/drawer/body.dart';
 import 'package:x/drawer/header.dart';
 import 'package:x/logic/boolStream.dart';
 import 'package:x/logic/channel.dart';
+import 'package:x/logic/drawerStream.dart';
 import 'package:x/painter.dart';
 import 'package:x/main.dart';
 import 'package:http/http.dart' as http;
@@ -41,7 +42,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   String currentTurn = "nope";
-  StreamController drawerStream = StreamController();
+  DrawerStream drawerStream = DrawerStream();
 //! names channel is to get the lit of players wheen drawer is
 
   Future timerForName() async {
@@ -106,7 +107,7 @@ class _MyAppState extends State<MyApp> {
               height: 200,
               width: 200,
               child: StreamBuilder(
-                  stream: drawerStream.stream.asBroadcastStream(),
+                  stream: drawerStream.broadcastStream,
                   builder: (context, snap) {
                     if (snap.hasData) {
                       List responseList = [];
