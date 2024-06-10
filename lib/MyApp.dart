@@ -6,6 +6,7 @@ import 'package:x/CorrectDialogue.dart';
 import 'package:x/Message/fieldRow.dart';
 import 'package:x/drawer/body.dart';
 import 'package:x/drawer/header.dart';
+import 'package:x/logic/apiservice.dart';
 import 'package:x/logic/boolStream.dart';
 import 'package:x/logic/channel.dart';
 import 'package:x/logic/drawerStream.dart';
@@ -32,37 +33,15 @@ class _MyAppState extends State<MyApp> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final Channel channel = Channel();
 
-  ChatController chatController = ChatController();
-  List listOfMessage = [];
-  BoolStream boolStreamController = BoolStream();
-
-  void localStreamForTextField(bool value) {
-    //! this is used for the readonly for textfield after right answr setting thing .
-    boolStreamController.add(value);
-  }
+  final ChatController chatController = ChatController();
+  final BoolStream boolStreamController = BoolStream();
 
   String currentTurn = "nope";
+  List listOfMessage = [];
   DrawerStream drawerStream = DrawerStream();
 //! names channel is to get the lit of players wheen drawer is
 
-  Future timerForName() async {
-    var x = await http.post(
-        Uri.parse(
-            "http://localhost:8080/currentcheck"), //!adds the current player in the list and returns the first player ELSE THIS SHOULD BE MADE TO RECEIVE IF ALL ARE IN BREAK, THEN INSTEAD OF NAME I SHOULD GET THE BREAK THING .
-        body: json.encode(widget.currentName));
-    return x.body;
-  }
-
   var responses;
-  void sendDataToChannel(String text) {
-    //@ SEND MESSAGE .
-    Map<String, String> mapOfDataEntered = {
-      "Name": widget.currentName,
-      "Message": text,
-    };
-    // channel.sink.add(json.encode(mapOfDataEntered));
-    channel.add(json.encode(mapOfDataEntered));
-  }
 
   var messageStream;
   var forDrawerVariable;
@@ -70,11 +49,15 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+
+    List listOfMessage = [];
+
+    channel.sendDataToChannel(
+        widget.currentName, " JOINED THE CONVERSATION=========");
     // forDrawer().then((value) => drawerStream.add(value));
-    responses = timerForName();
+    responses = ApiService.post(widget.currentName);
 
     messageStream = channel.broadcastStream();
-    sendDataToChannel(" JOINED THE CONVERSATION=========");
   }
 
   dynamic insideOnPressed(String str) {
@@ -83,14 +66,14 @@ class _MyAppState extends State<MyApp> {
       if (singleValue != "") {
         toogleForTextFieldIfTrue =
             true; //@ if true , the client should be able to talk in break
-        localStreamForTextField(true);
+        boolStreamController.add(true);
 
-        sendDataToChannel(str);
+        channel.sendDataToChannel(widget.currentName, str);
 
         return showCorrectDialog(context);
       }
     } else {
-      sendDataToChannel(str);
+      channel.sendDataToChannel(widget.currentName, str);
     }
   }
 
@@ -225,7 +208,7 @@ class _MyAppState extends State<MyApp> {
                       },
                     ),
                     Painter(widget.currentName, currentTurn,
-                        localStreamForTextField, widget.getListOfWords),
+                        boolStreamController.add, widget.getListOfWords),
                   ],
                 ),
               );

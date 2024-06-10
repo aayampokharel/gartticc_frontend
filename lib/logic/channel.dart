@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -11,6 +13,16 @@ class Channel {
   }
 
   Stream broadcastStream() => channel.stream.asBroadcastStream();
+
+  void sendDataToChannel(String currentName, String text) {
+    //@ SEND MESSAGE .
+    Map<String, String> mapOfDataEntered = {
+      "Name": currentName,
+      "Message": text,
+    };
+    // channel.sink.add(json.encode(mapOfDataEntered));
+    channel.sink.add(json.encode(mapOfDataEntered));
+  }
 
   void close() => channel.sink.close();
 }
