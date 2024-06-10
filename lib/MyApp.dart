@@ -6,6 +6,7 @@ import 'package:x/CorrectDialogue.dart';
 import 'package:x/Message/fieldRow.dart';
 import 'package:x/drawer/body.dart';
 import 'package:x/drawer/header.dart';
+import 'package:x/logic/boolStream.dart';
 import 'package:x/logic/channel.dart';
 import 'package:x/painter.dart';
 import 'package:x/main.dart';
@@ -32,7 +33,7 @@ class _MyAppState extends State<MyApp> {
 
   ChatController chatController = ChatController();
   List listOfMessage = [];
-  StreamController<bool> boolStreamController = StreamController.broadcast();
+  BoolStream boolStreamController = BoolStream();
 
   void localStreamForTextField(bool value) {
     //! this is used for the readonly for textfield after right answr setting thing .
