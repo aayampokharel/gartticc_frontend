@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:x/CorrectDialogue.dart';
+import 'package:x/drawer/body.dart';
 import 'package:x/painter.dart';
 import 'package:x/main.dart';
 import 'package:http/http.dart' as http;
@@ -116,18 +117,7 @@ class _MyAppState extends State<MyApp> {
                       List responseList = [];
 
                       responseList = json.decode((snap.data!));
-                      return ListView.builder(
-                          itemCount: responseList.length,
-                          itemBuilder: (build, count) {
-                            return ListTile(
-                              leading: const Padding(
-                                padding:
-                                    EdgeInsets.only(left: 10.0, right: 20.0),
-                                child: Icon(Icons.person_2_sharp),
-                              ),
-                              title: Text(responseList[count].toString()),
-                            );
-                          });
+                      return Body(drawerStream: drawerStream);
                     } else {
                       return const CircularProgressIndicator();
                     }
