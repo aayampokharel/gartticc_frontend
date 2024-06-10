@@ -3,11 +3,14 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:x/CorrectDialogue.dart';
+import 'package:x/Message/fieldRow.dart';
 import 'package:x/drawer/body.dart';
 import 'package:x/drawer/header.dart';
+import 'package:x/logic/channel.dart';
 import 'package:x/painter.dart';
 import 'package:x/main.dart';
 import 'package:http/http.dart' as http;
+import 'package:x/ChatController.dart';
 
 class MyApp extends StatefulWidget {
   final String currentName;
@@ -25,9 +28,9 @@ var toogleForTextFieldIfTrue =
 
 class _MyAppState extends State<MyApp> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  final channel = WebSocketChannel.connect(Uri.parse('ws://localhost:8080/'));
+  final Channel channel = Channel();
 
-  TextEditingController chatController = TextEditingController();
+  ChatController chatController = ChatController();
   List listOfMessage = [];
   StreamController<bool> boolStreamController = StreamController.broadcast();
 
@@ -55,7 +58,8 @@ class _MyAppState extends State<MyApp> {
       "Name": widget.currentName,
       "Message": text,
     };
-    channel.sink.add(json.encode(mapOfDataEntered));
+    // channel.sink.add(json.encode(mapOfDataEntered));
+    channel.add(json.encode(mapOfDataEntered));
   }
 
   var messageStream;
@@ -67,7 +71,7 @@ class _MyAppState extends State<MyApp> {
     // forDrawer().then((value) => drawerStream.add(value));
     responses = timerForName();
 
-    messageStream = channel.stream.asBroadcastStream();
+    messageStream = channel.broadcastStream();
     sendDataToChannel(" JOINED THE CONVERSATION=========");
   }
 
@@ -178,41 +182,8 @@ class _MyAppState extends State<MyApp> {
                                       if (snapshot.hasData) {
                                         //? this below is not required as ?? false ko use nai bhaena ni after data is there .
 
-                                        return Row(
-                                          children: [
-                                            Container(
-                                              color: Colors.purple,
-                                              width: 500,
-                                              child: TextField(
-                                                readOnly:
-                                                    noEntrySnapshot.data ??
-                                                        false,
-                                                controller: chatController,
-                                                onSubmitted: (text) {
-                                                  if (noEntrySnapshot.data ==
-                                                      false) {
-                                                    insideOnPressed(text);
-                                                    chatController.text = "";
-                                                  } else {
-                                                    null;
-                                                  }
-                                                },
-                                              ),
-                                            ),
-                                            ElevatedButton(
-                                                onPressed: () {
-                                                  if (noEntrySnapshot.data ==
-                                                      false) {
-                                                    insideOnPressed(
-                                                        chatController.text);
-                                                    chatController.text = "";
-                                                  } else {
-                                                    null;
-                                                  }
-                                                },
-                                                child: Text("OK")),
-                                          ],
-                                        );
+                                        return fieldRow(noEntrySnapshot,
+                                            chatController, insideOnPressed);
 
                                         //     //@ this is for boolean stream controller. only displayed when no data i.e. at first
 
@@ -230,6 +201,7 @@ class _MyAppState extends State<MyApp> {
                         }
 
                         //? this is returned when there is not data(only once) but if msg is not sent then this is the one that persists for blue messgage.but anyone once sends message this is never displayed in anyone except absolute new players.
+                        //? this is for making the thing .
                         return Column(
                           children: [
                             Container(
@@ -241,38 +213,8 @@ class _MyAppState extends State<MyApp> {
                                 //# this controls the nullness of the ok button when answer is right .
                                 stream: boolStreamController.stream,
                                 builder: (context, initialSnapshot) {
-                                  return Row(
-                                    children: [
-                                      Container(
-                                        color: Colors.brown,
-                                        width: 500,
-                                        child: TextField(
-                                          readOnly:
-                                              initialSnapshot.data ?? false,
-                                          controller: chatController,
-                                          onSubmitted: (txts) {
-                                            insideOnPressed(
-                                                chatController.text);
-                                            chatController.text = "";
-                                            // } else {
-                                            //   null;
-                                            // }
-                                          },
-                                        ),
-                                      ),
-                                      ElevatedButton(
-                                          onPressed: () {
-                                            if (initialSnapshot.data == false) {
-                                              insideOnPressed(
-                                                  chatController.text);
-                                              chatController.text = "";
-                                            } else {
-                                              null;
-                                            }
-                                          },
-                                          child: const Text("OK")),
-                                    ],
-                                  );
+                                  return fieldRow(initialSnapshot,
+                                      chatController, insideOnPressed);
 
                                   //     //@ this is the row which is displayed after one click on ok as yo streambuilder returns below code first when no data . after press, there is data and never that code is repeated, and this is the one which again goes for snapshot.hasdata==false as initially it has no data.
                                 }),
@@ -295,7 +237,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void dispose() {
     // Close the WebSocket channels
-    channel.sink.close();
+    channel.close();
 
     // Close the StreamControllers
     drawerStream.close();
