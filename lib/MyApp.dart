@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:x/CorrectDialogue.dart';
 import 'package:x/drawer/body.dart';
+import 'package:x/drawer/header.dart';
 import 'package:x/painter.dart';
 import 'package:x/main.dart';
 import 'package:http/http.dart' as http;
@@ -95,18 +96,7 @@ class _MyAppState extends State<MyApp> {
       drawer: Drawer(
         child: Column(
           children: [
-            const DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.blue,
-              ),
-              child: Text(
-                'Players Online',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                ),
-              ),
-            ),
+            const Header(),
             SizedBox(
               height: 200,
               width: 200,
