@@ -15,6 +15,11 @@ class CheckChannel {
     checkChannel.sink.close();
   }
 
+  void alertWebSocket() {
+    checkChannel.sink.add(
+        "true"); ////watch out for the UI AS THIS THING  IS REBUILT 3 TIMES INITIALLY.(Not good)
+  }
+
   void add(String str) {
     checkChannel.sink.add(str);
   }
