@@ -1,9 +1,5 @@
-//simple example
-
 import 'dart:async';
 import 'dart:convert';
-//import 'dart:io';
-
 import 'package:flutter_drawing_board/flutter_drawing_board.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -85,7 +81,6 @@ class _PainterState extends State<Painter> {
 
         /// this is for checking if the turn is this particular user or not
         builder: (context, snapshott) {
-          print("hello 💦💦💦💦💦");
           drawingController.clear();
           drawingController2.clear();
           singleValue = localName;
@@ -149,7 +144,7 @@ class _PainterState extends State<Painter> {
             ///break is the data sent in the stream after a certain time for drawer to change the drawing power to someone else.
           } else if ((snapshott.data.toString() == "Break")) {
             singleValue = "";
-            print("break ==========");
+
             //! this is for not letting yellow player to write. working ...feri kina rewrite bhayo bhanda cause this painter is inside the streambuilder and already said its like server and setstate waiting for data and rebuilding the thing . so painter lai bahira pathaune from main.
 
             widget.getListOfWords().then((value) {

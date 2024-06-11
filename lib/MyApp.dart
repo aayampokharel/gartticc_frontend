@@ -1,15 +1,17 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'package:web_socket_channel/web_socket_channel.dart';
+//import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:x/CorrectDialogue.dart';
-import 'package:x/Message/fieldRow.dart';
+//import 'package:x/Message/fieldRow.dart';
 import 'package:x/drawer/body.dart';
 import 'package:x/drawer/header.dart';
 import 'package:x/logic/apiservice.dart';
 import 'package:x/logic/boolStream.dart';
 import 'package:x/logic/channel.dart';
 import 'package:x/logic/drawerStream.dart';
+import 'package:x/messsagecontainer.dart';
+import 'package:x/okButtonControl.dart';
 import 'package:x/painter.dart';
 import 'package:x/main.dart';
 import 'package:http/http.dart' as http;
@@ -49,8 +51,6 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-
-    List listOfMessage = [];
 
     channel.sendDataToChannel(
         widget.currentName, " JOINED THE CONVERSATION=========");
@@ -124,83 +124,7 @@ class _MyAppState extends State<MyApp> {
               return SingleChildScrollView(
                 child: Column(
                   children: [
-                    StreamBuilder(
-                      stream: messageStream,
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          listOfMessage
-                              .add(json.decode(snapshot.data.toString()));
-
-                          return SingleChildScrollView(
-                            //#  BLUE ONE displayed after the first msg is sent else black color one.
-                            child: Column(
-                              children: [
-                                Container(
-                                  height: 300,
-                                  color: Colors.blueAccent,
-                                  width: double.infinity,
-                                  child: ListView.builder(
-                                      itemCount: listOfMessage.length,
-                                      itemBuilder: (context, ind) {
-                                        return Padding(
-                                          padding: const EdgeInsets.all(10),
-                                          child: SizedBox(
-                                            width: 222,
-                                            height: 83,
-                                            child: Text(
-                                              " ${listOfMessage[ind]["Name"]} :${listOfMessage[ind]["Message"]}",
-                                            ),
-                                          ),
-                                        );
-                                      }),
-                                ), //!problem here  BELOW:
-                                StreamBuilder<bool>(
-                                    //! this controls the nullness of the ok button when answer is right .
-                                    stream: boolStreamController.stream,
-                                    builder: (context, noEntrySnapshot) {
-                                      if (snapshot.hasData) {
-                                        //? this below is not required as ?? false ko use nai bhaena ni after data is there .
-
-                                        return fieldRow(noEntrySnapshot,
-                                            chatController, insideOnPressed);
-
-                                        //     //@ this is for boolean stream controller. only displayed when no data i.e. at first
-
-                                        //     //! this is the row which is displayed after one click on ok as yo streambuilder returns below code first when no data . after press, there is data and never that code is repeated, and this is the one which again goes for snapshot.hasdata==false as initially it has no data.
-                                      } else {
-                                        return const CircularProgressIndicator();
-                                      }
-                                    }),
-                              ],
-                            ),
-                          );
-                        }
-                        if (snapshot.hasError) {
-                          return Text('Error: ${snapshot.error}');
-                        }
-
-                        //? this is returned when there is not data(only once) but if msg is not sent then this is the one that persists for blue messgage.but anyone once sends message this is never displayed in anyone except absolute new players.
-                        //? this is for making the thing .
-                        return Column(
-                          children: [
-                            Container(
-                              height: 300,
-                              color: Colors.black,
-                              width: double.infinity,
-                            ),
-                            StreamBuilder<bool>(
-                                //# this controls the nullness of the ok button when answer is right .
-                                stream: boolStreamController.stream,
-                                builder: (context, initialSnapshot) {
-                                  return fieldRow(initialSnapshot,
-                                      chatController, insideOnPressed);
-
-                                  //     //@ this is the row which is displayed after one click on ok as yo streambuilder returns below code first when no data . after press, there is data and never that code is repeated, and this is the one which again goes for snapshot.hasdata==false as initially it has no data.
-                                }),
-                          ],
-                        );
-                      },
-                    ),
+                    messageStreamBuilder(),
                     Painter(widget.currentName, currentTurn,
                         boolStreamController.add, widget.getListOfWords),
                   ],
@@ -210,6 +134,42 @@ class _MyAppState extends State<MyApp> {
               return const CircularProgressIndicator();
             }
           }),
+    );
+  }
+
+  StreamBuilder<Object?> messageStreamBuilder() {
+    return StreamBuilder(
+      stream: messageStream,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          listOfMessage.add(json.decode(snapshot.data.toString()));
+
+          return SingleChildScrollView(
+            //#  BLUE ONE displayed after the first msg is sent else black color one.
+            child: Column(
+              children: [
+                containerForMessage(listOfMessage), //!problem here  BELOW:
+                StreamBuilder<bool>(
+                    //! this controls the nullness of the ok button when answer is right .
+                    stream: boolStreamController.stream,
+                    builder: (context, noEntrySnapshot) {
+                      return okButtonControl(
+                          snapshot: snapshot,
+                          noEntrySnapshot: noEntrySnapshot,
+                          chatController: chatController,
+                          insideOnPressed: insideOnPressed);
+                    }),
+              ],
+            ),
+          );
+        }
+        if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        }
+
+        //? never used below.
+        return const CircularProgressIndicator();
+      },
     );
   }
 
