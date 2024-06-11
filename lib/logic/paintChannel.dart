@@ -11,14 +11,6 @@ class PaintChannel {
     return paintChannel.stream.asBroadcastStream();
   }
 
-  void getJsonList(String str) async {
-    paintChannel.add(str);
-  }
-
-  void getListJson(String str) async {
-    paintChannel.add(str);
-  }
-
   void add(String str) {
     paintChannel.sink.add(str);
   }
