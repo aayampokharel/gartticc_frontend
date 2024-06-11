@@ -89,18 +89,12 @@ class _MyAppState extends State<MyApp> {
             SizedBox(
               height: 200,
               width: 200,
-              child: StreamBuilder(
-                  stream: drawerStream.broadcastStream,
-                  builder: (context, snap) {
-                    if (snap.hasData) {
-                      List responseList = [];
+              child:
 
-                      responseList = json.decode((snap.data!));
-                      return Body(drawerStream: drawerStream);
-                    } else {
-                      return const CircularProgressIndicator();
-                    }
-                  }),
+                  // List responseList = [];
+
+                  // responseList = json.decode((snap.data!));
+                  Body(drawerStream: drawerStream),
             ),
           ],
         ),
