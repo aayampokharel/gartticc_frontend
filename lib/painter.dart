@@ -27,11 +27,11 @@ class _PainterState extends State<Painter> {
   var localName;
   DrawingController guesserController = DrawingController();
 
-  void _getJsonList() async {
-    var x = json.encode(drawingController.getJsonList());
+  // void _getJsonList() async {
+  //   var x = json.encode(drawingController.getJsonList());
 
-    paintChannel.add(x);
-  }
+  //   paintChannel.add(x);
+  // }
 
 //@ alertWebsocket() is for adding true so that the input field is readonly:true
 
@@ -112,16 +112,20 @@ class _PainterState extends State<Painter> {
                   color: Colors.yellow,
                   child: Listener(
                     onPointerCancel: (s) {
-                      _getJsonList();
+                      paintChannel.getJsonList(
+                          json.encode(drawingController.getJsonList()));
                     },
                     onPointerDown: (s) {
-                      _getJsonList();
+                      paintChannel.getJsonList(
+                          json.encode(drawingController.getJsonList()));
                     },
                     onPointerMove: (s) {
-                      _getJsonList();
+                      paintChannel.getJsonList(
+                          json.encode(drawingController.getJsonList()));
                     },
                     onPointerUp: (s) {
-                      _getJsonList();
+                      paintChannel.getJsonList(
+                          json.encode(drawingController.getJsonList()));
                     },
                     child: DrawingBoard(
                       controller: drawingController,
