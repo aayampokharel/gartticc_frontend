@@ -3,8 +3,10 @@ import 'dart:convert';
 import 'package:flutter_drawing_board/flutter_drawing_board.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:flutter_drawing_board/paint_contents.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
+
+import 'package:x/logic/checkChannel.dart';
+import 'package:x/logic/drawingController.dart';
+import 'package:x/logic/paintChannel.dart';
 import 'package:x/main.dart';
 
 class Painter extends StatefulWidget {
@@ -27,12 +29,12 @@ class _PainterState extends State<Painter> {
   void _getJsonList() async {
     var x = json.encode(drawingController.getJsonList());
 
-    paintChannel.sink.add(x);
+    paintChannel.add(x);
   }
 
 //@ alertWebsocket() is for adding true so that the input field is readonly:true
   void alertWebSocket() {
-    checkChannel.sink.add(
+    checkChannel.add(
         "true"); ////watch out for the UI AS THIS THING  IS REBUILT 3 TIMES INITIALLY.(Not good)
   }
 
@@ -63,17 +65,15 @@ class _PainterState extends State<Painter> {
     if (widget.currentName == widget.currentTurn) {
       alertWebSocket();
     }
-    paintStream = paintChannel.stream.asBroadcastStream();
-    checkStream = checkChannel.stream
-        .asBroadcastStream(); //@ this makes other things depend on it .
+    paintStream = paintChannel.broadcastStream();
+    checkStream = checkChannel
+        .broadcastStream(); //@ this makes other things depend on it .
   }
 
   final DrawingController drawingController = DrawingController();
-  final paintChannel =
-      WebSocketChannel.connect(Uri.parse('ws://localhost:8080/paint'));
+  final paintChannel = PaintChannel();
 
-  final checkChannel =
-      WebSocketChannel.connect(Uri.parse('ws://localhost:8080/check'));
+  final checkChannel = CheckChannel();
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
@@ -214,42 +214,8 @@ class _PainterState extends State<Painter> {
                 StreamBuilder(
                     stream: paintStream,
                     builder: (context, snapshots) {
-                      if (snapshots.hasData) {
-                        List list = json
-                            .decode(snapshots.data.toString())
-                            .toList(); //!//!//!
+                      paintStreamUse(drawingController2, snapshots);
 
-                        if (list.isEmpty) {
-                          drawingController2.clear();
-                        }
-                        for (int i = 0; i < list.length; i++) {
-                          if (list.isEmpty) {
-                            drawingController2.clear();
-                            break;
-                          }
-
-                          if (list[i]["type"] == "SimpleLine") {
-                            drawingController2.addContents(
-                                <PaintContent>[SimpleLine.fromJson(list[i])]);
-                          }
-                          if (list[i]["type"] == "SmoothLine") {
-                            drawingController2.addContents(
-                                <PaintContent>[SmoothLine.fromJson(list[i])]);
-                          }
-                          if (list[i]["type"] == "StraightLine") {
-                            drawingController2.addContents(
-                                <PaintContent>[StraightLine.fromJson(list[i])]);
-                          }
-                          if (list[i]["type"] == "Rectangle") {
-                            drawingController2.addContents(
-                                <PaintContent>[Rectangle.fromJson(list[i])]);
-                          }
-                          if (list[i]["type"] == "Circle") {
-                            drawingController2.addContents(
-                                <PaintContent>[Circle.fromJson(list[i])]);
-                          }
-                        }
-                      }
                       return IgnorePointer(
                         child: Container(
                           width: 300,
@@ -273,10 +239,10 @@ class _PainterState extends State<Painter> {
   @override
   void dispose() {
     // Close the WebSocket channels
-    paintChannel.sink.close();
-    paintChannel.stream.drain();
-    checkChannel.sink.close();
-    checkChannel.stream.drain();
+    paintChannel.close();
+    paintChannel.drain();
+    checkChannel.close();
+    checkChannel.drain();
 
     // Dispose the drawing controllers
     drawingController.dispose();

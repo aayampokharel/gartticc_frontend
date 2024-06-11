@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:x/ChatController.dart';
+import 'package:x/logic/ChatController.dart';
 import 'package:x/Message/fieldRow.dart';
 
 class okButtonControl extends StatelessWidget {

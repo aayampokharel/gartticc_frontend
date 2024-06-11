@@ -15,7 +15,7 @@ import 'package:x/okButtonControl.dart';
 import 'package:x/painter.dart';
 import 'package:x/main.dart';
 import 'package:http/http.dart' as http;
-import 'package:x/ChatController.dart';
+import 'package:x/logic/ChatController.dart';
 
 class MyApp extends StatefulWidget {
   final String currentName;

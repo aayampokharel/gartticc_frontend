@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:x/ChatController.dart';
+import 'package:x/logic/ChatController.dart';
 
 Widget fieldRow(AsyncSnapshot noEntrySnapshot, ChatController chatCtrl,
     dynamic Function(String) insideOnPressed) {

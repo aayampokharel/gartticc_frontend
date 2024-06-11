@@ -43,8 +43,7 @@ var listOfName = [];
 
 class _NameState extends State<Name> {
   TextEditingController loginController = TextEditingController();
-  //
-  //
+
   //? getkustofwords() returns a single word from backend in thee break section in painter
   Future getListOfWords() async {
     var response = await http.get(Uri.parse(
