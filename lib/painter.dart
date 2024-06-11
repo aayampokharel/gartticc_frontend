@@ -24,7 +24,7 @@ class Painter extends StatefulWidget {
 
 class _PainterState extends State<Painter> {
   var localName;
-  DrawingController drawingController2 = DrawingController();
+  DrawingController guesserController = DrawingController();
 
   void _getJsonList() async {
     var x = json.encode(drawingController.getJsonList());
@@ -82,7 +82,7 @@ class _PainterState extends State<Painter> {
         /// this is for checking if the turn is this particular user or not
         builder: (context, snapshott) {
           drawingController.clear();
-          drawingController2.clear();
+          guesserController.clear();
           singleValue = localName;
           if (snapshott.data == widget.currentName) {
             widget.localStreamForTextField(true);
@@ -214,7 +214,7 @@ class _PainterState extends State<Painter> {
                 StreamBuilder(
                     stream: paintStream,
                     builder: (context, snapshots) {
-                      paintStreamUse(drawingController2, snapshots);
+                      paintStreamUse(guesserController, snapshots);
 
                       return IgnorePointer(
                         child: Container(
@@ -222,7 +222,7 @@ class _PainterState extends State<Painter> {
                           height: 300,
                           color: const Color.fromARGB(255, 11, 185, 109),
                           child: DrawingBoard(
-                            controller: drawingController2,
+                            controller: guesserController,
                             background: const SizedBox(width: 300, height: 300),
                             showDefaultActions: false,
                             showDefaultTools: false,
@@ -246,7 +246,7 @@ class _PainterState extends State<Painter> {
 
     // Dispose the drawing controllers
     drawingController.dispose();
-    drawingController2.dispose();
+    guesserController.dispose();
 
     // Close the streams if they have subscriptions
     if (paintStream is StreamSubscription) {
