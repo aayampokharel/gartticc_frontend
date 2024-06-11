@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter_drawing_board/flutter_drawing_board.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:x/Canvas/AnimationService.dart';
 
 import 'package:x/logic/checkChannel.dart';
 import 'package:x/logic/drawingController.dart';
@@ -39,11 +40,7 @@ class _PainterState extends State<Painter> {
 
   var toogleValueForProgressBar = false;
 
-  Future<String> forProgressBar() async {
-    var response =
-        await http.get(Uri.parse("http://localhost:8080/progressbar"));
-    return response.body;
-  }
+  AnimationService forProgressBar = AnimationService();
 
   @override
   void initState() {
@@ -161,7 +158,7 @@ class _PainterState extends State<Painter> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 FutureBuilder(
-                    future: forProgressBar(),
+                    future: forProgressBar.forProgressBar(),
                     builder: (context, fsnapshot) {
                       if (fsnapshot.hasData) {
                         if (!toogleValueForProgressBar) {
