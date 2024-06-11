@@ -33,10 +33,6 @@ class _PainterState extends State<Painter> {
   }
 
 //@ alertWebsocket() is for adding true so that the input field is readonly:true
-  void alertWebSocket() {
-    checkChannel.add(
-        "true"); ////watch out for the UI AS THIS THING  IS REBUILT 3 TIMES INITIALLY.(Not good)
-  }
 
   var paintStream;
   var checkStream;
@@ -63,7 +59,7 @@ class _PainterState extends State<Painter> {
     });
 
     if (widget.currentName == widget.currentTurn) {
-      alertWebSocket();
+      checkChannel.alertWebSocket();
     }
     paintStream = paintChannel.broadcastStream();
     checkStream = checkChannel
