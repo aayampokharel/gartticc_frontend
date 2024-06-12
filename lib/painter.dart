@@ -1,14 +1,15 @@
-//simple example
-
 import 'dart:async';
 import 'dart:convert';
-//import 'dart:io';
-
 import 'package:flutter_drawing_board/flutter_drawing_board.dart';
-//import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:flutter_drawing_board/paint_contents.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:x/Canvas/AniBar.dart';
+import 'package:x/Canvas/AnimationService.dart';
+import 'package:x/Canvas/break.dart';
+import 'package:x/Canvas/drawing.dart';
+import 'package:x/Canvas/guesserStructure.dart';
+import 'package:x/WordForDrawer.dart';
+import 'package:x/logic/checkChannel.dart';
+import 'package:x/logic/paintChannel.dart';
 import 'package:x/main.dart';
 
 class Painter extends StatefulWidget {
@@ -16,7 +17,7 @@ class Painter extends StatefulWidget {
   State<Painter> createState() => _PainterState();
   String currentName;
   String currentTurn;
-  Function localStreamForTextField;
+  Function(bool) localStreamForTextField;
   Future Function() getListOfWords;
 
   Painter(this.currentName, this.currentTurn, this.localStreamForTextField,
@@ -25,44 +26,46 @@ class Painter extends StatefulWidget {
 }
 
 class _PainterState extends State<Painter> {
-  DrawingController drawingController2 = DrawingController();
+  var localName;
+  final DrawingController guesserController = DrawingController();
+  final DrawingController drawingController = DrawingController();
+  final paintChannel = PaintChannel();
 
-  void _getJsonList() async {
-    var x = json.encode(drawingController.getJsonList());
-
-    paintChannel.sink.add(x);
-  }
-
+  final checkChannel = CheckChannel();
 //@ alertWebsocket() is for adding true so that the input field is readonly:true
-  void alertWebSocket() {
-    checkChannel.sink.add("true");
-  }
 
-  var paintStream;
-  var checkStream;
+  late Stream paintStream;
+  late Stream checkStream;
+
+  var toogleValueForProgressBar = false;
+
+  AnimationService forProgressBar = AnimationService();
 
   @override
   void initState() {
     //@ alertWebsocket() is called to make input field is readonly while player is drawing
     super.initState();
-    widget.getListOfWords().then((value) {
-      setState(() {
-        singleValue = jsonDecode(value).toString();
-      });
-    });
+
+    _initializer();
+
     if (widget.currentName == widget.currentTurn) {
-      alertWebSocket();
+      checkChannel.alertWebSocket();
     }
-    paintStream = paintChannel.stream.asBroadcastStream();
-    checkStream = checkChannel.stream.asBroadcastStream();
+    paintStream = paintChannel.broadcastStream();
+    checkStream = checkChannel
+        .broadcastStream(); //@ this makes other things depend on it .
   }
 
-  final DrawingController drawingController = DrawingController();
-  final paintChannel =
-      WebSocketChannel.connect(Uri.parse('ws://localhost:8080/paint'));
+  Future<void> _initializer() {
+    return widget.getListOfWords().then((value) {
+      setState(() {
+        singleValue = jsonDecode(value).toString();
+        localName =
+            singleValue; //! this is causing the initial rebuild of widget which is not good dbecause of setstate. or its another issue. but 500ms bhitra there is setstate running .ELSE USE CIRCULAR PROGRESS INDICATOR.
+      });
+    });
+  }
 
-  final checkChannel =
-      WebSocketChannel.connect(Uri.parse('ws://localhost:8080/check'));
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
@@ -71,7 +74,8 @@ class _PainterState extends State<Painter> {
         /// this is for checking if the turn is this particular user or not
         builder: (context, snapshott) {
           drawingController.clear();
-          drawingController2.clear();
+          guesserController.clear();
+          singleValue = localName;
           if (snapshott.data == widget.currentName) {
             widget.localStreamForTextField(true);
 
@@ -79,112 +83,33 @@ class _PainterState extends State<Painter> {
           }
           if (snapshott.data == widget.currentName && snapshott.hasData) {
             return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  //# THis is the text displayed for drawer.
-                  width: 300,
-                  padding: const EdgeInsets.all(10),
-                  color: Colors.pink,
-                  child: Text(singleValue.toString()),
-                ),
-                Container(
-                  width: 300,
-                  height:
-                      300, //# for drawer calls getJsonList() to send the points.
-                  color: Colors.yellow,
-                  child: Listener(
-                    onPointerCancel: (s) {
-                      _getJsonList();
-                    },
-                    onPointerDown: (s) {
-                      _getJsonList();
-                    },
-                    onPointerMove: (s) {
-                      _getJsonList();
-                    },
-                    onPointerUp: (s) {
-                      _getJsonList();
-                    },
-                    child: DrawingBoard(
-                      controller: drawingController,
-                      background: const SizedBox(width: 300, height: 300),
-                      showDefaultActions: true,
-                      showDefaultTools: true,
-                    ),
-                  ),
-                ),
+                animationBar(),
+                WordForDrawer(singleValue),
+                Drawing(paintChannel, drawingController),
               ],
             );
 
             ///break is the data sent in the stream after a certain time for drawer to change the drawing power to someone else.
           } else if ((snapshott.data.toString() == "Break")) {
-            widget.localStreamForTextField(false);
+            singleValue = "";
+
+            //! this is for not letting yellow player to write. working ...feri kina rewrite bhayo bhanda cause this painter is inside the streambuilder and already said its like server and setstate waiting for data and rebuilding the thing . so painter lai bahira pathaune from main.
 
             widget.getListOfWords().then((value) {
-              singleValue = jsonDecode(value).toString();
+              localName = jsonDecode(value).toString();
             });
-            return Container(
-              color: Colors.red,
-              child: const Text("take a break guys...... "),
-            );
+
+            toogleValueForProgressBar = true;
+            return const BreakContainer();
 
             /// below code is for display of drawn elements.
           } else {
             //@ THIS is called for non-drawers ones.
             widget.localStreamForTextField(false);
-            return StreamBuilder(
-                stream: paintStream,
-                builder: (context, snapshots) {
-                  if (snapshots.hasData) {
-                    List list = json
-                        .decode(snapshots.data.toString())
-                        .toList(); //!//!//!
-
-                    if (list.isEmpty) {
-                      drawingController2.clear();
-                    }
-                    for (int i = 0; i < list.length; i++) {
-                      if (list.isEmpty) {
-                        drawingController2.clear();
-                        break;
-                      }
-
-                      if (list[i]["type"] == "SimpleLine") {
-                        drawingController2.addContents(
-                            <PaintContent>[SimpleLine.fromJson(list[i])]);
-                      }
-                      if (list[i]["type"] == "SmoothLine") {
-                        drawingController2.addContents(
-                            <PaintContent>[SmoothLine.fromJson(list[i])]);
-                      }
-                      if (list[i]["type"] == "StraightLine") {
-                        drawingController2.addContents(
-                            <PaintContent>[StraightLine.fromJson(list[i])]);
-                      }
-                      if (list[i]["type"] == "Rectangle") {
-                        drawingController2.addContents(
-                            <PaintContent>[Rectangle.fromJson(list[i])]);
-                      }
-                      if (list[i]["type"] == "Circle") {
-                        drawingController2.addContents(
-                            <PaintContent>[Circle.fromJson(list[i])]);
-                      }
-                    }
-                  }
-                  return IgnorePointer(
-                    child: Container(
-                      width: 700,
-                      height: 700,
-                      color: const Color.fromARGB(255, 11, 185, 109),
-                      child: DrawingBoard(
-                        controller: drawingController2,
-                        background: const SizedBox(width: 700, height: 600),
-                        showDefaultActions: false,
-                        showDefaultTools: false,
-                      ),
-                    ),
-                  );
-                });
+            return guesserStructure(toogleValueForProgressBar, forProgressBar,
+                paintStream, guesserController);
           }
         });
   }
@@ -192,21 +117,21 @@ class _PainterState extends State<Painter> {
   @override
   void dispose() {
     // Close the WebSocket channels
-    paintChannel.sink.close();
-    paintChannel.stream.drain();
-    checkChannel.sink.close();
-    checkChannel.stream.drain();
+    paintChannel.close();
+    paintChannel.drain();
+    checkChannel.close();
+    checkChannel.drain();
 
     // Dispose the drawing controllers
     drawingController.dispose();
-    drawingController2.dispose();
+    guesserController.dispose();
 
     // Close the streams if they have subscriptions
     if (paintStream is StreamSubscription) {
-      paintStream.cancel();
+      (paintStream as StreamSubscription).cancel();
     }
     if (checkStream is StreamSubscription) {
-      checkStream.cancel();
+      (checkStream as StreamSubscription).cancel();
     }
 
     super.dispose();
