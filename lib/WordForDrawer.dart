@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class WordForDrawer extends StatelessWidget {
   var singleValue;
-  WordForDrawer(this.singleValue);
+  WordForDrawer(this.singleValue, {super.key});
 
   @override
   Widget build(BuildContext context) {

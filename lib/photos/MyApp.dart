@@ -10,7 +10,7 @@ class MyApp extends StatefulWidget {
   final String currentName;
   final Future Function() getListOfWords;
   @override
-  MyApp(this.currentName, this.getListOfWords, this.singleValue);
+  MyApp(this.currentName, this.getListOfWords, this.singleValue, {super.key});
   @override
   State<MyApp> createState() => _MyAppState();
 }
@@ -253,7 +253,7 @@ class _MyAppState extends State<MyApp> {
                                                     null;
                                                   }
                                                 },
-                                                child: Text("OK")),
+                                                child: const Text("OK")),
                                           ],
                                         );
                                         // }

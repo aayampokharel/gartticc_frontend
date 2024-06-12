@@ -5,7 +5,7 @@ import 'package:x/logic/drawingController.dart';
 class guesserContainer extends StatelessWidget {
   DrawingController guesserController;
   var snapshots;
-  guesserContainer(this.guesserController, this.snapshots);
+  guesserContainer(this.guesserController, this.snapshots, {super.key});
 
   @override
   Widget build(BuildContext context) {

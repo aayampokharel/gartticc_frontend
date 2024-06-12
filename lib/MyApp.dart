@@ -89,12 +89,7 @@ class _MyAppState extends State<MyApp> {
             SizedBox(
               height: 200,
               width: 200,
-              child:
-
-                  // List responseList = [];
-
-                  // responseList = json.decode((snap.data!));
-                  Body(drawerStream: drawerStream),
+              child: Body(drawerStream: drawerStream),
             ),
           ],
         ),

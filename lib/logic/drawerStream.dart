@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 
 class DrawerStream {
   StreamController drawerStream;

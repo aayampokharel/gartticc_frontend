@@ -5,7 +5,7 @@ class GuesserAnimationBar extends StatelessWidget {
 
   bool toogleValueForProgressBar;
 
-  GuesserAnimationBar(this.toogleValueForProgressBar, this.forProgressBar);
+  GuesserAnimationBar(this.toogleValueForProgressBar, this.forProgressBar, {super.key});
 
   @override
   Widget build(BuildContext context) {

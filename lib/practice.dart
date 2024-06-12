@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(red());
+  runApp(const red());
 }
 
 class red extends StatefulWidget {
@@ -29,7 +29,7 @@ class _redState extends State<red> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: Text("hello"),
+          title: const Text("hello"),
         ),
         body: StreamBuilder(
             stream: c.stream,
@@ -46,11 +46,11 @@ class _redState extends State<red> {
                         onPressed: () {
                           c.sink.add("a");
                         },
-                        child: Text("ok")),
+                        child: const Text("ok")),
                   ],
                 );
               } else {
-                return CircularProgressIndicator();
+                return const CircularProgressIndicator();
               }
             }),
       ),
@@ -61,7 +61,7 @@ class _redState extends State<red> {
 class cntr1 extends StatefulWidget {
   String x;
 
-  cntr1(this.x);
+  cntr1(this.x, {super.key});
 
   @override
   State<cntr1> createState() => _cntr1State();
@@ -70,7 +70,7 @@ class cntr1 extends StatefulWidget {
 class _cntr1State extends State<cntr1> {
   @override
   Widget build(BuildContext context) {
-    Future.delayed(Duration(seconds: 5), () {
+    Future.delayed(const Duration(seconds: 5), () {
       print("done");
       setState(() {
         widget.x = "hello second";

@@ -6,9 +6,8 @@ import 'package:flutter_drawing_board/paint_contents.dart';
 void paintStreamUse(DrawingController drawingController2, snapshots) {
   if (snapshots.hasData) {
     List list = json.decode(snapshots.data.toString()).toList(); //!//!//!
-    print(list);
+
     if (list.isEmpty) {
-      print("🔥🔥🔥🔥🔥");
       drawingController2.clear();
     }
     for (int i = 0; i < list.length; i++) {

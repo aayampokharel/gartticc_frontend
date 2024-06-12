@@ -6,11 +6,9 @@ import 'package:x/Canvas/AniBar.dart';
 import 'package:x/Canvas/AnimationService.dart';
 import 'package:x/Canvas/break.dart';
 import 'package:x/Canvas/drawing.dart';
-import 'package:x/Canvas/guesser.dart';
-import 'package:x/Canvas/guesserAniBar.dart';
+import 'package:x/Canvas/guesserStructure.dart';
 import 'package:x/WordForDrawer.dart';
 import 'package:x/logic/checkChannel.dart';
-import 'package:x/logic/drawingController.dart';
 import 'package:x/logic/paintChannel.dart';
 import 'package:x/main.dart';
 
@@ -29,12 +27,15 @@ class Painter extends StatefulWidget {
 
 class _PainterState extends State<Painter> {
   var localName;
-  DrawingController guesserController = DrawingController();
+  final DrawingController guesserController = DrawingController();
+  final DrawingController drawingController = DrawingController();
+  final paintChannel = PaintChannel();
 
+  final checkChannel = CheckChannel();
 //@ alertWebsocket() is for adding true so that the input field is readonly:true
 
-  var paintStream;
-  var checkStream;
+  late Stream paintStream;
+  late Stream checkStream;
 
   var toogleValueForProgressBar = false;
 
@@ -45,13 +46,7 @@ class _PainterState extends State<Painter> {
     //@ alertWebsocket() is called to make input field is readonly while player is drawing
     super.initState();
 
-    widget.getListOfWords().then((value) {
-      setState(() {
-        singleValue = jsonDecode(value).toString();
-        localName =
-            singleValue; //! this is causing the initial rebuild of widget which is not good dbecause of setstate. or its another issue. but 500ms bhitra there is setstate running .ELSE USE CIRCULAR PROGRESS INDICATOR.
-      });
-    });
+    _initializer();
 
     if (widget.currentName == widget.currentTurn) {
       checkChannel.alertWebSocket();
@@ -61,10 +56,16 @@ class _PainterState extends State<Painter> {
         .broadcastStream(); //@ this makes other things depend on it .
   }
 
-  final DrawingController drawingController = DrawingController();
-  final paintChannel = PaintChannel();
+  Future<void> _initializer() {
+    return widget.getListOfWords().then((value) {
+      setState(() {
+        singleValue = jsonDecode(value).toString();
+        localName =
+            singleValue; //! this is causing the initial rebuild of widget which is not good dbecause of setstate. or its another issue. but 500ms bhitra there is setstate running .ELSE USE CIRCULAR PROGRESS INDICATOR.
+      });
+    });
+  }
 
-  final checkChannel = CheckChannel();
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
@@ -107,21 +108,8 @@ class _PainterState extends State<Painter> {
           } else {
             //@ THIS is called for non-drawers ones.
             widget.localStreamForTextField(false);
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                GuesserAnimationBar(
-                  //can combine this with above animation one with new parameter .
-                  toogleValueForProgressBar,
-                  forProgressBar,
-                ),
-                StreamBuilder(
-                    stream: paintStream,
-                    builder: (context, snapshots) {
-                      return guesserContainer(guesserController, snapshots);
-                    }),
-              ],
-            );
+            return guesserStructure(toogleValueForProgressBar, forProgressBar,
+                paintStream, guesserController);
           }
         });
   }
@@ -140,10 +128,10 @@ class _PainterState extends State<Painter> {
 
     // Close the streams if they have subscriptions
     if (paintStream is StreamSubscription) {
-      paintStream.cancel();
+      (paintStream as StreamSubscription).cancel();
     }
     if (checkStream is StreamSubscription) {
-      checkStream.cancel();
+      (checkStream as StreamSubscription).cancel();
     }
 
     super.dispose();

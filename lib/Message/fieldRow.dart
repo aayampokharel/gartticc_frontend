@@ -31,7 +31,7 @@ Widget fieldRow(AsyncSnapshot noEntrySnapshot, ChatController chatCtrl,
               null;
             }
           },
-          child: Text("OK")),
+          child: const Text("OK")),
     ],
   );
 }

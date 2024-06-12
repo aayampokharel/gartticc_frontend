@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_drawing_board/flutter_drawing_board.dart';
@@ -8,7 +7,7 @@ class Drawing extends StatelessWidget {
   PaintChannel paintChannel;
 
   DrawingController drawingController;
-  Drawing(this.paintChannel, this.drawingController);
+  Drawing(this.paintChannel, this.drawingController, {super.key});
 
   @override
   Widget build(BuildContext context) {

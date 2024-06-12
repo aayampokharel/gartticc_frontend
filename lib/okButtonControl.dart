@@ -7,7 +7,7 @@ class okButtonControl extends StatelessWidget {
   AsyncSnapshot<bool> noEntrySnapshot;
   ChatController chatController;
   dynamic Function(String) insideOnPressed;
-  okButtonControl({
+  okButtonControl({super.key, 
     required this.snapshot,
     required this.noEntrySnapshot,
     required this.chatController,
