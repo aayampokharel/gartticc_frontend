@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class PaintChannel {
@@ -11,12 +13,13 @@ class PaintChannel {
     return paintChannel.stream.asBroadcastStream();
   }
 
-  void getJsonList(String str) async {
-    paintChannel.add(str);
-  }
+  // void getJsonList(String str) async {
+  //   paintChannel.add(str);
+  // }
 
-  void getListJson(String str) async {
-    paintChannel.add(str);
+  void getListJson(List<Map<String, dynamic>> value) async {
+    var str = json.encode(value);
+    paintChannel.sink.add(str);
   }
 
   void add(String str) {
