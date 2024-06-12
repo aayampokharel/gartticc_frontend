@@ -3,7 +3,9 @@ import 'dart:convert';
 import 'package:flutter_drawing_board/flutter_drawing_board.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:x/Canvas/AniBar.dart';
 import 'package:x/Canvas/AnimationService.dart';
+import 'package:x/Canvas/drawer.dart';
 
 import 'package:x/logic/checkChannel.dart';
 import 'package:x/logic/drawingController.dart';
@@ -26,12 +28,6 @@ class Painter extends StatefulWidget {
 class _PainterState extends State<Painter> {
   var localName;
   DrawingController guesserController = DrawingController();
-
-  // void getJsonList() async {
-  //   var x = json.encode(drawingController.getJsonList());
-
-  //   paintChannel.add(x);
-  // }
 
 //@ alertWebsocket() is for adding true so that the input field is readonly:true
 
@@ -86,18 +82,7 @@ class _PainterState extends State<Painter> {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                TweenAnimationBuilder(
-                  duration: const Duration(milliseconds: 19500),
-                  tween: Tween<double>(begin: 0, end: 300),
-                  builder:
-                      (BuildContext context, dynamic value, Widget? child) {
-                    return Container(
-                      height: 20,
-                      width: value,
-                      color: Colors.deepOrange,
-                    );
-                  },
-                ),
+                animationBar(),
                 Container(
                   //# THis is the text displayed for drawer.
                   width: 300,
@@ -105,32 +90,7 @@ class _PainterState extends State<Painter> {
                   color: Colors.pink,
                   child: Text(singleValue.toString()),
                 ),
-                Container(
-                  width: 300,
-                  height:
-                      300, //# for drawer calls getJsonList() to send the points.
-                  color: Colors.yellow,
-                  child: Listener(
-                    onPointerCancel: (s) {
-                      paintChannel.getListJson(drawingController.getJsonList());
-                    },
-                    onPointerDown: (s) {
-                      paintChannel.getListJson(drawingController.getJsonList());
-                    },
-                    onPointerMove: (s) {
-                      paintChannel.getListJson(drawingController.getJsonList());
-                    },
-                    onPointerUp: (s) {
-                      paintChannel.getListJson(drawingController.getJsonList());
-                    },
-                    child: DrawingBoard(
-                      controller: drawingController,
-                      background: const SizedBox(width: 300, height: 300),
-                      showDefaultActions: true,
-                      showDefaultTools: true,
-                    ),
-                  ),
-                ),
+                Drawing(paintChannel, drawingController),
               ],
             );
 
