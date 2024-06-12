@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_drawing_board/flutter_drawing_board.dart';
+import 'package:x/logic/drawingController.dart';
 
 class guesserContainer extends StatelessWidget {
   DrawingController guesserController;
-
-  guesserContainer(this.guesserController);
+  var snapshots;
+  guesserContainer(this.guesserController, this.snapshots);
 
   @override
   Widget build(BuildContext context) {
+    paintStreamUse(guesserController, snapshots);
     return IgnorePointer(
       child: Container(
         width: 300,

@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:x/Canvas/AniBar.dart';
 import 'package:x/Canvas/AnimationService.dart';
 import 'package:x/Canvas/break.dart';
-import 'package:x/Canvas/drawer.dart';
+import 'package:x/Canvas/drawing.dart';
 import 'package:x/Canvas/guesser.dart';
 import 'package:x/Canvas/guesserAniBar.dart';
 import 'package:x/WordForDrawer.dart';
@@ -118,9 +118,7 @@ class _PainterState extends State<Painter> {
                 StreamBuilder(
                     stream: paintStream,
                     builder: (context, snapshots) {
-                      paintStreamUse(guesserController, snapshots);
-
-                      return guesserContainer(guesserController);
+                      return guesserContainer(guesserController, snapshots);
                     }),
               ],
             );
