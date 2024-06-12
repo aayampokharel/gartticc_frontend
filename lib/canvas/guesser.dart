@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_drawing_board/flutter_drawing_board.dart';
 
 class guesserContainer extends StatelessWidget {
-  DrawingController guesserController;
+  var guesserController;
 
   guesserContainer(this.guesserController);
 
