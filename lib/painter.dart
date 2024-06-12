@@ -1,12 +1,14 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter_drawing_board/flutter_drawing_board.dart';
-import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:x/Canvas/AniBar.dart';
 import 'package:x/Canvas/AnimationService.dart';
+import 'package:x/Canvas/break.dart';
 import 'package:x/Canvas/drawer.dart';
-
+import 'package:x/Canvas/guesser.dart';
+import 'package:x/Canvas/guesserAniBar.dart';
+import 'package:x/WordForDrawer.dart';
 import 'package:x/logic/checkChannel.dart';
 import 'package:x/logic/drawingController.dart';
 import 'package:x/logic/paintChannel.dart';
@@ -47,7 +49,7 @@ class _PainterState extends State<Painter> {
       setState(() {
         singleValue = jsonDecode(value).toString();
         localName =
-            singleValue; //! this is causing the initial rebuild of widget which is not good dbecause of setstate. or its another issue. but 500ms bhitra there is setstate running .
+            singleValue; //! this is causing the initial rebuild of widget which is not good dbecause of setstate. or its another issue. but 500ms bhitra there is setstate running .ELSE USE CIRCULAR PROGRESS INDICATOR.
       });
     });
 
@@ -83,13 +85,7 @@ class _PainterState extends State<Painter> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 animationBar(),
-                Container(
-                  //# THis is the text displayed for drawer.
-                  width: 300,
-                  padding: const EdgeInsets.all(10),
-                  color: Colors.pink,
-                  child: Text(singleValue.toString()),
-                ),
+                WordForDrawer(singleValue),
                 Drawing(paintChannel, drawingController),
               ],
             );
@@ -105,10 +101,7 @@ class _PainterState extends State<Painter> {
             });
 
             toogleValueForProgressBar = true;
-            return Container(
-              color: Colors.red,
-              child: const Text("take a break guys...... "),
-            );
+            return const BreakContainer();
 
             /// below code is for display of drawn elements.
           } else {
@@ -117,71 +110,17 @@ class _PainterState extends State<Painter> {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                FutureBuilder(
-                    future: forProgressBar.forProgressBar(),
-                    builder: (context, fsnapshot) {
-                      if (fsnapshot.hasData) {
-                        if (!toogleValueForProgressBar) {
-                          toogleValueForProgressBar = true;
-                          var responseDoubleTime =
-                              double.parse(fsnapshot.data!) * 1000 + 600;
-                          responseDoubleTime = responseDoubleTime >= 19600
-                              ? 19000
-                              : responseDoubleTime;
-
-                          return TweenAnimationBuilder(
-                            duration: Duration(
-                                milliseconds: 19600 -
-                                    int.parse(responseDoubleTime.toString())),
-                            tween: Tween<double>(
-                                begin: (responseDoubleTime / 1000) *
-                                    15, // iineach second 15 15 ko rate le bhyauna parcha animatiioin.
-                                end: 300),
-                            builder: (BuildContext context, dynamic value,
-                                Widget? child) {
-                              return Container(
-                                height: 20,
-                                width: value,
-                                color: Colors.deepOrange,
-                              );
-                            },
-                          );
-                        } else {
-                          return TweenAnimationBuilder(
-                            duration: const Duration(milliseconds: 19600),
-                            tween: Tween<double>(begin: 0, end: 300),
-                            builder: (BuildContext context, dynamic value,
-                                Widget? child) {
-                              return Container(
-                                height: 20,
-                                width: value,
-                                color: Colors.deepOrange,
-                              );
-                            },
-                          );
-                        }
-                      } else {
-                        return const CircularProgressIndicator();
-                      }
-                    }),
+                GuesserAnimationBar(
+                  //can combine this with above animation one with new parameter .
+                  toogleValueForProgressBar,
+                  forProgressBar,
+                ),
                 StreamBuilder(
                     stream: paintStream,
                     builder: (context, snapshots) {
                       paintStreamUse(guesserController, snapshots);
 
-                      return IgnorePointer(
-                        child: Container(
-                          width: 300,
-                          height: 300,
-                          color: const Color.fromARGB(255, 11, 185, 109),
-                          child: DrawingBoard(
-                            controller: guesserController,
-                            background: const SizedBox(width: 300, height: 300),
-                            showDefaultActions: false,
-                            showDefaultTools: false,
-                          ),
-                        ),
-                      );
+                      return guesserContainer(guesserController);
                     }),
               ],
             );
